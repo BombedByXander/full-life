@@ -1,29 +1,464 @@
-
 <!DOCTYPE html>
 <html lang="en-us">
-
+<base href="https://cdn.jsdelivr.net/gh/bubbls/UGS-Assets@354e3c6939a08e472482653567d566ba3a2aa527/half%20life/">
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 	<link rel="shortcut icon" type="image/x-icon" href="favicon.ico">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-	<meta name="MobileOptimized" content="640" />
-	<meta name="HandheldFriendly" content="true" />
-	<title>Xash</title>
+	<meta name="MobileOptimized" content="2000">
+	<meta name="HandheldFriendly" content="true">
+	<title>ProdByXander - Half Life v3</title>
+	
+	<!-- Google Fonts -->
+	<link rel="preconnect" href="https://fonts.googleapis.com">
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+	<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@300..700&family=Google+Sans:ital,opsz,wght@0,17..18,400..700;1,17..18,400..700&display=swap" rel="stylesheet">
+
+	<style>
+		/* ===== CSS RESET & BASE ===== */
+		*, *::before, *::after {
+			box-sizing: border-box;
+			margin: 0;
+			padding: 0;
+		}
+
+		:root {
+			--background: hsl(0 0% 4%);
+			--foreground: hsl(0 0% 96%);
+			--card: hsl(0 0% 8%);
+			--card-foreground: hsl(0 0% 96%);
+			--primary: hsl(36 100% 50%);
+			--primary-dark: hsl(36 100% 35%);
+			--secondary: hsl(0 0% 14%);
+			--muted: hsl(0 0% 60%);
+			--border: hsl(0 0% 20%);
+			--radius: 0.75rem;
+		}
+
+		body {
+			font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+			background-color: var(--background);
+			color: var(--foreground);
+			overflow-x: hidden;
+			min-height: 100vh;
+			line-height: 1.6;
+			-webkit-user-select: none;
+			-moz-user-select: none;
+			-ms-user-select: none;
+			user-select: none;
+		}
+
+		h1, h2, h3, h4, h5, h6 {
+			font-family: 'Orbitron', sans-serif;
+		}
+
+		/* ===== BACKGROUND GRID ===== */
+		.bg-grid {
+			position: fixed;
+			inset: -50%;
+			width: 200%;
+			height: 200%;
+			opacity: 0.05;
+			pointer-events: none;
+			background-image: 
+				linear-gradient(hsla(36, 100%, 50%, 0.3) 1px, transparent 1px),
+				linear-gradient(90deg, hsla(36, 100%, 50%, 0.3) 1px, transparent 1px);
+			background-size: 50px 50px;
+			transform: skewX(-15deg);
+			animation: grid-slide 20s linear infinite;
+		}
+
+		@keyframes grid-slide {
+			0% {
+				transform: skewX(-15deg) translate(0, 0);
+			}
+			100% {
+				transform: skewX(-15deg) translate(50px, 50px);
+			}
+		}
+
+		/* ===== MAIN CONTAINER ===== */
+		.container {
+			position: relative;
+			z-index: 10;
+			display: flex;
+			flex-direction: column;
+			align-items: center;
+			justify-content: center;
+			min-height: 100vh;
+			padding: 2rem 1rem;
+		}
+
+		/* ===== TITLE SECTION ===== */
+		.title-section {
+			text-align: center;
+			margin-bottom: 2.5rem;
+		}
+
+		.title {
+			font-size: clamp(2rem, 8vw, 3.5rem);
+			font-weight: 700;
+			color: var(--primary);
+			text-shadow: 0 0 10px hsla(36, 100%, 50%, 0.5), 0 0 20px hsla(36, 100%, 50%, 0.3);
+			letter-spacing: 0.1em;
+			margin-bottom: 0.5rem;
+		}
+
+		.subtitle {
+			font-size: clamp(1rem, 3vw, 1.25rem);
+			color: hsla(0, 0%, 96%, 0.8);
+			font-weight: 300;
+			letter-spacing: 0.05em;
+		}
+
+		/* ===== SETTINGS CARD ===== */
+		.settings-card {
+			width: 100%;
+			max-width: 500px;
+			background: linear-gradient(var(--card), var(--card)) padding-box,
+						linear-gradient(135deg, var(--primary), var(--primary-dark)) border-box;
+			border: 2px solid transparent;
+			border-radius: var(--radius);
+			padding: 2rem;
+			backdrop-filter: blur(10px);
+		}
+
+		/* ===== FORM ELEMENTS ===== */
+		.form-section {
+			margin-bottom: 1.5rem;
+		}
+
+		.form-label {
+			display: block;
+			font-size: 0.875rem;
+			font-weight: 500;
+			color: var(--primary);
+			text-shadow: 0 0 10px hsla(36, 100%, 50%, 0.3);
+			margin-bottom: 0.25rem;
+			letter-spacing: 0.05em;
+		}
+
+		.form-hint {
+			font-size: 0.75rem;
+			color: var(--muted);
+			margin-bottom: 1rem;
+		}
+
+		/* Radio Group */
+		.radio-group {
+			display: flex;
+			flex-direction: column;
+			gap: 0.75rem;
+		}
+
+		.radio-item {
+			display: flex;
+			align-items: center;
+			gap: 0.75rem;
+			cursor: pointer;
+			transition: color 0.2s;
+		}
+
+		.radio-item:hover {
+			color: var(--primary);
+		}
+
+		.radio-item input[type="radio"] {
+			appearance: none;
+			-webkit-appearance: none;
+			width: 18px;
+			height: 18px;
+			border: 2px solid var(--primary);
+			border-radius: 50%;
+			background: transparent;
+			cursor: pointer;
+			position: relative;
+			transition: all 0.2s;
+		}
+
+		.radio-item input[type="radio"]:checked {
+			background: var(--primary);
+			box-shadow: 0 0 10px var(--primary);
+		}
+
+		.radio-item input[type="radio"]:checked::after {
+			content: '';
+			position: absolute;
+			top: 50%;
+			left: 50%;
+			transform: translate(-50%, -50%);
+			width: 6px;
+			height: 6px;
+			background: var(--background);
+			border-radius: 50%;
+		}
+
+		/* Text Input */
+		.text-input {
+			width: 100%;
+			padding: 0.75rem 1rem;
+			background: var(--secondary);
+			border: 2px solid var(--border);
+			border-radius: calc(var(--radius) - 4px);
+			color: var(--foreground);
+			font-family: 'Inter', sans-serif;
+			font-size: 0.9rem;
+			transition: all 0.3s;
+		}
+
+		.text-input:focus {
+			outline: none;
+			border-color: var(--primary);
+			box-shadow: 0 0 15px hsla(36, 100%, 50%, 0.3);
+		}
+
+		/* Separator */
+		.separator {
+			height: 1px;
+			background: linear-gradient(90deg, transparent, var(--border), transparent);
+			margin: 1.5rem 0;
+		}
+
+		/* ===== PROGRESS BAR ===== */
+		.progress-container {
+			display: none;
+			margin-bottom: 1.5rem;
+		}
+
+		.progress-container.visible {
+			display: block;
+		}
+
+		.progress-label {
+			display: flex;
+			justify-content: space-between;
+			font-size: 0.75rem;
+			color: var(--muted);
+			margin-bottom: 0.5rem;
+		}
+
+		.progress-bar {
+			width: 100%;
+			height: 24px;
+			background: var(--secondary);
+			border: 2px solid var(--border);
+			border-radius: calc(var(--radius) - 4px);
+			overflow: hidden;
+			position: relative;
+		}
+
+		.progress-fill {
+			height: 100%;
+			background: linear-gradient(90deg, var(--primary-dark), var(--primary));
+			width: 0%;
+			transition: width 0.3s ease;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+		}
+
+		.progress-text {
+			position: absolute;
+			inset: 0;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			font-size: 0.75rem;
+			font-weight: 600;
+			color: var(--foreground);
+			text-shadow: 0 1px 2px rgba(0,0,0,0.5);
+		}
+
+		/* ===== LAUNCH BUTTON ===== */
+		.launch-btn {
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			gap: 0.5rem;
+			width: 100%;
+			padding: 1rem 2rem;
+			font-family: 'Orbitron', sans-serif;
+			font-size: 1.1rem;
+			font-weight: 600;
+			letter-spacing: 0.05em;
+			background: transparent;
+			border: 2px solid var(--primary);
+			color: var(--primary);
+			border-radius: calc(var(--radius) - 4px);
+			cursor: pointer;
+			transition: all 0.3s;
+			animation: pulse-glow 2s ease-in-out infinite;
+		}
+
+		.launch-btn:hover:not(:disabled) {
+			background: var(--primary);
+			color: var(--background);
+			box-shadow: 0 0 30px hsla(36, 100%, 50%, 0.5);
+		}
+
+		.launch-btn:disabled {
+			opacity: 0.6;
+			cursor: not-allowed;
+			animation: none;
+		}
+
+		@keyframes pulse-glow {
+			0%, 100% { box-shadow: 0 0 20px hsla(36, 100%, 50%, 0.3); }
+			50% { box-shadow: 0 0 40px hsla(36, 100%, 50%, 0.6); }
+		}
+
+		/* Spinner */
+		.spinner {
+			width: 20px;
+			height: 20px;
+			border: 2px solid transparent;
+			border-top-color: currentColor;
+			border-radius: 50%;
+			animation: spin 1s linear infinite;
+		}
+
+		@keyframes spin {
+			to { transform: rotate(360deg); }
+		}
+
+		/* ===== LOADER ===== */
+		.loader-container {
+			display: none;
+			justify-content: center;
+			margin-top: 2rem;
+		}
+
+		.loader-container.visible {
+			display: flex;
+		}
+
+		.loader {
+			width: 60px;
+			height: 60px;
+			border: 4px solid var(--secondary);
+			border-top-color: var(--primary);
+			border-radius: 50%;
+			animation: spin 1.5s linear infinite;
+		}
+
+		/* ===== STATUS TEXT ===== */
+		.status-section {
+			margin-top: 1.5rem;
+			text-align: center;
+		}
+
+		.status-text {
+			font-size: 0.875rem;
+			color: var(--muted);
+		}
+
+		/* ===== CANVAS (GAME) ===== */
+		.game-canvas {
+			display: none;
+			width: 100%;
+			height: 100vh;
+			max-width: 100vw;
+			max-height: 100vh;
+			object-fit: contain;
+			background-image: url(xd.png);
+			border: none;
+		}
+
+		/* ===== CONTROLS (when game is running) ===== */
+		.game-controls {
+			display: none;
+			position: fixed;
+			top: 1rem;
+			right: 1rem;
+			z-index: 100;
+			background: var(--card);
+			padding: 1rem;
+			border-radius: var(--radius);
+			border: 1px solid var(--border);
+		}
+
+		.game-controls.visible {
+			display: block;
+		}
+
+		.control-item {
+			display: flex;
+			align-items: center;
+			gap: 0.5rem;
+			margin-bottom: 0.5rem;
+			font-size: 0.8rem;
+			color: var(--foreground);
+		}
+
+		.control-item:last-child {
+			margin-bottom: 0;
+		}
+
+		.control-btn {
+			padding: 0.5rem 1rem;
+			background: var(--primary);
+			border: none;
+			border-radius: 4px;
+			color: var(--background);
+			font-weight: 600;
+			cursor: pointer;
+			transition: all 0.2s;
+		}
+
+		.control-btn:hover {
+			box-shadow: 0 0 15px var(--primary);
+		}
+
+		/* ===== HIDDEN ELEMENTS ===== */
+		.hidden {
+			display: none !important;
+		}
+
+		#output {
+			width: 100%;
+			height: 200px;
+			margin-top: 1rem;
+			background: black;
+			color: #00ff00;
+			font-family: 'Lucida Console', Monaco, monospace;
+			font-size: 0.75rem;
+			padding: 0.5rem;
+			border: 1px solid var(--border);
+			border-radius: 4px;
+			resize: none;
+			display: none;
+		}
+
+		/* ===== FOOTER ===== */
+		.footer {
+			position: fixed;
+			bottom: 1rem;
+			text-align: center;
+			width: 100%;
+		}
+
+		.footer-text {
+			font-size: 0.7rem;
+			color: hsla(0, 0%, 60%, 0.5);
+		}
+	</style>
+
 	<script>
+		// Prevent context menu
 		document.addEventListener('contextmenu', event => event.preventDefault());
+		
+		// Warn before leaving
 		window.onbeforeunload = function(e) {
 			e.preventDefault();
 			e.returnValue = 'Really want to quit the game?';
 		};
 
+		// Prevent Ctrl+S and Ctrl+W
 		document.onkeydown = function(e) {
 			e = e || window.event;
-
 			if (!e.ctrlKey) return;
-
 			var code = e.which || e.keyCode;
-
 			switch (code) {
 				case 83:
 				case 87:
@@ -32,6 +467,8 @@
 					break;
 			}
 		};
+
+		// Easter egg audio
 		var a = new Audio('music.mp3');
 		var pashalka_count = 0;
 
@@ -42,310 +479,189 @@
 		window.addEventListener('click', play_sound);
 		window.addEventListener('keydown', play_sound);
 	</script>
-	<style>
-		body {
-			font-family: arial;
-			margin: 0;
-			padding: none;
-			background-color: #555555;
-			color: #f0b418;
-		}
-
-		.emscripten {
-			padding-right: 0;
-			margin-left: auto;
-			margin-right: auto;
-			display: block;
-		}
-
-		div.emscripten {
-			text-align: center;
-		}
-
-		div.emscripten_border {}
-
-		canvas.emscripten {
-			border: 0px none;
-			background-image: url(xd.png);
-			box-shadow: #ffa600 0px 0px 9px 4px;
-		}
-
-		@-webkit-keyframes rotation {
-			from {
-				-webkit-transform: rotate(0deg);
-			}
-
-			to {
-				-webkit-transform: rotate(360deg);
-			}
-		}
-
-		@-moz-keyframes rotation {
-			from {
-				-moz-transform: rotate(0deg);
-			}
-
-			to {
-				-moz-transform: rotate(360deg);
-			}
-		}
-
-		@-o-keyframes rotation {
-			from {
-				-o-transform: rotate(0deg);
-			}
-
-			to {
-				-o-transform: rotate(360deg);
-			}
-		}
-
-		@keyframes rotation {
-			from {
-				transform: rotate(0deg);
-			}
-
-			to {
-				transform: rotate(360deg);
-			}
-		}
-
-
-		#controls {
-			display: inline-block;
-			float: right;
-			vertical-align: top;
-			margin-top: 5px;
-			margin-right: 20px;
-		}
-
-		#output {
-			width: 100%;
-			height: 200px;
-			margin: 0 auto;
-			margin-top: 10px;
-			border-left: 0px;
-			border-right: 0px;
-			border-style: solid;
-			padding-left: 0px;
-			padding-right: 0px;
-			display: none;
-			background-color: black;
-			color: rgba(0, 255, 0, 255);
-			font-family: 'Lucida Console', Monaco, monospace;
-			outline: none;
-			border-color: #f0B418;
-		}
-
-		.loader {
-			border: 4px solid #f3f3f3;
-			border-radius: 50%;
-			border-top: 4px solid #ffa600;
-			width: 16px;
-			height: 16px;
-			-webkit-animation: spin 2s linear infinite;
-			animation: spin 2s linear infinite;
-		}
-
-		@-webkit-keyframes spin {
-			0% {
-				-webkit-transform: rotate(0deg);
-			}
-
-			100% {
-				-webkit-transform: rotate(360deg);
-			}
-		}
-
-		@keyframes spin {
-			0% {
-				transform: rotate(0deg);
-			}
-
-			100% {
-				transform: rotate(360deg);
-			}
-		}
-
-		a.glow,
-		a.glow:hover,
-		a.glow:focus {
-			text-decoration: none;
-			color: #F0B418;
-			text-shadow: none;
-			-webkit-transition: 500ms linear 0s;
-			-moz-transition: 500ms linear 0s;
-			-o-transition: 500ms linear 0s;
-			transition: 500ms linear 0s;
-			outline: 0 none;
-			cursor: default;
-		}
-
-		a.glow:hover,
-		a.glow:focus {
-			color: #ffa600;
-			text-shadow: -1px 1px 8px #ffa600, 1px -1px 8px #ffa600;
-		}
-
-		hr {
-			border-color: #ffa600;
-		}
-
-		#label_file_select {
-			padding: 1px 6px;
-		}
-
-		input[type="file"i] {
-			display: none;
-		}
-
-		input[type="text"i] {
-			color: #f0b418;
-			background-color: #555555;
-			border: 2px solid #f0b418;
-			font-family: Segoe UI;
-			font-size: 15px;
-			transition: 0.5s all;
-		}
-
-		* {
-			cursor: default;
-			-webkit-user-select: none;
-			-moz-user-select: none;
-			-ms-user-select: none;
-			user-select: none;
-			outline: none;
-		}
-
-		if (document.createElement("detect").style.textShadow==="") {
-			document.getElementsByTagName("html")[0].className+=" textshadow";
-		}
-	</style>
 </head>
 
-<body onerror=alert(event); bgcolor=#555555 text=#F0B418 link=#ffa600 vlink=#ffa600>
-	<div class="emscripten_border">
-		<canvas style="display:none" class="emscripten" id="canvas" oncontextmenu="event.preventDefault()"></canvas>
+<body>
+	<!-- Background Grid -->
+	<div class="bg-grid"></div>
+
+	<!-- Game Canvas (hidden until launch) -->
+	<canvas class="game-canvas" id="canvas" oncontextmenu="event.preventDefault()"></canvas>
+
+	<!-- Game Controls (shown when game is running) -->
+	<div class="game-controls" id="gameControls">
+		<label class="control-item">
+			<input type="checkbox" id="show_console_log"> Show Console Log
+		</label>
+		<label class="control-item">
+			<input type="checkbox" id="resize"> Resize canvas
+		</label>
+		<label class="control-item">
+			<input type="checkbox" id="pointerLock" checked> Lock/hide pointer
+		</label>
+		<button class="control-btn" onclick="Module.requestFullscreen(document.getElementById('pointerLock').checked, document.getElementById('resize').checked)">Fullscreen</button>
 	</div>
 
-	<p>
-	<div style=width:100%;height:0px>
-		<div style="float:left;" id="status">Downloading...</div>
-		<div id="progress1" style="position:relative;z-index:10;display:none;float:right;width:70%;border-color:#F0B418;border-style:solid;border-width:2px;height:20px; visibility: hidden;">
-			<div id=progress style="text-align:center;background-color:#F0B418;border-color:#555555;border-style:solid:border-width:3px;width:50%;height:20px; visibility: hidden;"></div>
-		</div><br>
-	</div><br></p>
-
-	<textarea style='visibility: hidden;' id="output" rows="8" style="display: none;"></textarea>
-	<div style='visibility: hidden;' id="asyncDialog" style="float:left"></div>
-
-	<center> <a class="glow">
-		<div id=optionsTitle>
-			<h1>Xash</h1>
+	<!-- Main Container -->
+	<div class="container" id="mainContainer">
+		<!-- Title Section -->
+		<div class="title-section">
+			<h1 class="title">ProdByXander</h1>
+			<h2 class="subtitle">Half-Life Web Version v3</h2>
 		</div>
-	</a></center>
-	<center> <form style=display:none id=fSettings>
-		<a class='glow'>Select filesystem for save and restore:</a>
-		<div id=idbHider style=display:none><label><input name=a type=radio id=rIndexedDB checked=true />IndexedDB</label><br></div>
-		<label><input name=a type=radio id=rLocalStorage />in Local storage</label><br>
-		<label><input name=a type=radio id=rNone />in RAM</label><br><br>
-		<hr>
-			<div id=zipHider style=display:none><input name=b type=radio id=rZip checked=true />ZIP archive from server
-		</label><select id=selectZip style=display:none></select><br></div>
 
-		<label><input name=b type=radio id=rLocalZip />Local ZIP file:</label><label id="label_file_select"><input type=file name=c id=iZipFile /><a class='glow'> Select ZIP file </a></label><br><br><hr>
-		Command-line arguments: <input name=d type=text id=iArgs value="-dev 1 -game valve" /><br><br>
-		<a class='glow' onclick="startXash();return false;">Launch Xash!</a>
-		<br><hr>
-		<div id='linksPlaceholder' style=display:none>Download archives to load locally next time:</div><br>
-		<label>
-			<div id=pkgHider style=display:none><input name=b type=radio id=rPackage />
-		</label><select id=selectPkg style=display:none></select><br></div>
-		<label>
-		<div style='visibility: hidden;' class="loader" id=loader1></div>
-	</form> </label>
+		<!-- Settings Card -->
+		<div class="settings-card" id="settingsCard">
+			<!-- Filesystem Selection -->
+			<div class="form-section">
+				<label class="form-label">Select filesystem for save and restore:</label>
+				<span class="form-hint">(Default IndexedDB)</span>
+				<div class="radio-group">
+					<label class="radio-item" id="idbHider">
+						<input type="radio" name="filesystem" id="rIndexedDB" checked>
+						<span>IndexedDB</span>
+					</label>
+					<label class="radio-item">
+						<input type="radio" name="filesystem" id="rLocalStorage">
+						<span>in Local storage</span>
+					</label>
+					<label class="radio-item">
+						<input type="radio" name="filesystem" id="rNone">
+						<span>in RAM</span>
+					</label>
+				</div>
+			</div>
 
-	<div style=width:100%><span id='controls'>
-			<a style='visibility: hidden;' class="glow"><span><label id="label_show_console_log" style="display: none;"><input type="checkbox" id="show_console_log">Show Console Log</label></span></a>
-			<a style='visibility: hidden;' class="glow"><span><label><input type="checkbox" id="resize">Resize canvas</label></span></a>
-			<a style='visibility: hidden;' class="glow"><span><label><input type="checkbox" id="pointerLock" checked>Lock/hide mouse pointer &nbsp;&nbsp;&nbsp;</label></span></a>
-			<span style='visibility: hidden;'><input type="button" value="Fullscreen" onclick="Module.requestFullscreen(document.getElementById('pointerLock').checked, document.getElementById('resize').checked)"></span>
-	</span></div>
+			<div class="separator"></div>
 
+			<!-- Version Selector (hidden by default, shown if multiple mods) -->
+			<div class="form-section hidden" id="zipHider">
+				<label class="form-label">Version Selector</label>
+				<select class="text-input" id="selectZip"></select>
+			</div>
+
+			<!-- Command Line Arguments -->
+			<div class="form-section">
+				<label class="form-label" for="iArgs">Command-line arguments:</label>
+				<input type="text" class="text-input" id="iArgs" value="-dev 0 -game valve">
+			</div>
+
+			<div class="separator"></div>
+
+			<!-- Progress Bar -->
+			<div class="progress-container" id="progressContainer">
+				<div class="progress-label">
+					<span id="statusText">Downloading...</span>
+					<span id="progressPercent">0%</span>
+				</div>
+				<div class="progress-bar">
+					<div class="progress-fill" id="progressFill"></div>
+					<div class="progress-text" id="progressText">0%</div>
+				</div>
+			</div>
+
+			<!-- Launch Button -->
+			<button class="launch-btn" id="launchBtn" onclick="startXash();">
+				<span id="launchBtnText">Launch Half Life!</span>
+			</button>
+
+			<!-- Loader -->
+			<div class="loader-container" id="loaderContainer">
+				<div class="loader"></div>
+			</div>
+		</div>
+
+		<!-- Status Section -->
+		<div class="status-section">
+			<p class="status-text" id="status">Downloading...</p>
+		</div>
+
+		<!-- Console Output (hidden by default) -->
+		<textarea id="output" rows="8" readonly></textarea>
+	</div>
+
+	<!-- Hidden Elements for Mods -->
+	<div class="hidden">
+		<div id="pkgHider"><select id="selectPkg"></select></div>
+		<input type="file" id="iZipFile">
+		<div id="asyncDialog"></div>
+	</div>
+
+	<!-- Footer -->
+	<footer class="footer">
+		<p class="footer-text">Engineered in the Black Mesa Research Facility by Xander <3</p>
+	</footer>
+
+	<!-- BrowserFS -->
 	<script type='text/javascript' src='browserfs.min.js'></script>
+	
 	<script type='text/javascript'>
 		var zipMods = [];
 		var pkgMods = [];
 	</script>
 
+	<!-- Mods Configuration -->
 	<script type='text/javascript' src='mods.js'></script>
 
 	<script type='text/javascript'>
 		var show_again = true;
 		var statusElement = document.getElementById('status');
-		var progressElement = document.getElementById('progress');
+		var progressElement = document.getElementById('progressFill');
+		var progressText = document.getElementById('progressText');
+		var progressPercent = document.getElementById('progressPercent');
+		var progressContainer = document.getElementById('progressContainer');
 		var asyncDialog = document.getElementById('asyncDialog');
-		var myerrorbuf = ''
+		var myerrorbuf = '';
 		var myerrordate = new Date();
 		var mounted = false;
 		var gamedir = 'valve';
 		var moduleCount = 0;
-		//var mem = 150;
 		var mfs;
 		var zipSize;
 
-
+		// Polyfill for older browsers
 		if (!ArrayBuffer['isView']) {
 			ArrayBuffer.isView = function(a) {
 				return a !== null && typeof(a) === "object" && a['buffer'] instanceof ArrayBuffer;
 			};
-
 		}
 
-		showElement('optionsTitle', false);
+		function updateProgress(percent) {
+			progressElement.style.width = percent + '%';
+			progressText.textContent = percent + '%';
+			progressPercent.textContent = percent + '%';
+		}
 
 		function prepareSelects() {
 			var len = zipMods.length;
 			var select = document.getElementById('selectZip');
 			if (len) {
 				showElement('zipHider', true);
-
 				if (len > 1) {
-					var links = '';
 					for (var i = 0; i < len; i++) {
 						select.options[i] = new Option(zipMods[i][1], zipMods[i][0]);
-						links += '<br><a class="glow" onclick=location.href="' + zipMods[i][0] + '">' + zipMods[i][1] + '</a>';
 					}
-					select.style.display = 'block';
-					document.getElementById('linksPlaceholder').innerHTML += links;
 				}
-			} else
-				document.getElementById('rZip').checked = false;
+			} else {
+				document.getElementById('rZip') && (document.getElementById('rZip').checked = false);
+			}
+			
 			len = pkgMods.length;
 			select = document.getElementById('selectPkg');
 			if (len) {
 				showElement('pkgHider', true);
-
 				if (len > 1) {
-					for (var i = 0; i < len; i++)
+					for (var i = 0; i < len; i++) {
 						select.options[i] = new Option(pkgMods[i][1], pkgMods[i][0]);
-					//select.style.display = 'block';
+					}
 				}
-			} else
-				document.getElementById('rPackage').checked = false;
-
-			if (!zipMods.length && !len) {
-				document.getElementById('rLocalZip').checked = true;
-				showElement('rLocalZip', false);
+			} else {
+				document.getElementById('rPackage') && (document.getElementById('rPackage').checked = false);
 			}
 		}
 
-		try {
-			mem = Math.round(window.location.hash.substring(1));
-		} catch (e) {};
-
 		var Module = {
-			TOTAL_MEMORY: mem * 1024 * 1024,
+			TOTAL_MEMORY: 150 * 1024 * 1024,
 			preRun: [],
 			postRun: [],
 			print: (function() {
@@ -356,18 +672,18 @@
 					if (text) {
 						myerrorbuf += text + '\n';
 						console.log(text);
-						if (text == "exit(0)")
-						{
+						if (text == "exit(0)") {
 							document.getElementById('canvas').style.display = "none";
+							document.getElementById('mainContainer').style.display = "flex";
+							document.getElementById('gameControls').classList.remove('visible');
 							setTimeout(function(){
 								location.reload();
 							}, 1000);
-						}
-						else if (text == "shader success") {
+						} else if (text == "shader success") {
 							pashalka_count = 100;
 							a.pause();
 							document.getElementById('canvas').style.display = "block";
-						} else {
+							document.getElementById('gameControls').classList.add('visible');
 						}
 					}
 					if (element) {
@@ -375,23 +691,19 @@
 							element.value = element.value.substring(512) + myerrorbuf;
 						else
 							element.value += myerrorbuf;
-						element.scrollTop = element.scrollHeight; // focus on bottom
+						element.scrollTop = element.scrollHeight;
 					}
-					myerrorbuf = ''
+					myerrorbuf = '';
 				};
 			})(),
 			printErr: function(text) {
 				if (arguments.length > 1) text = Array.prototype.slice.call(arguments).join(' ');
-				if (0) { // XXX disabled for safety typeof dump == 'function') {
-					dump(text + '\n'); // fast, straight to the real console
-				} else {
-					if (myerrorbuf.length > 2048)
-						myerrorbuf = 'some lines skipped\n' + myerrorbuf.substring(512);
-					myerrorbuf += text + '\n';
-					if (new Date() - myerrordate > 3000) {
-						myerrordate = new Date();
-						Module.print();
-					}
+				if (myerrorbuf.length > 2048)
+					myerrorbuf = 'some lines skipped\n' + myerrorbuf.substring(512);
+				myerrorbuf += text + '\n';
+				if (new Date() - myerrordate > 3000) {
+					myerrordate = new Date();
+					Module.print();
 				}
 			},
 			canvas: (function() {
@@ -400,7 +712,6 @@
 					alert('WebGL context lost. You will need to reload the page.');
 					e.preventDefault();
 				}, false);
-
 				return canvas;
 			})(),
 			setStatus: function(text) {
@@ -415,15 +726,13 @@
 				}
 
 				statusElement.innerHTML = text;
-				if (progressElement) {
-					var m = text.match(/([^(]+)\((\d+(\.\d+)?)\/(\d+)\)/);
-
-					if (m) {
-						var progress = Math.round(parseInt(m[2]) * 100 / parseInt(m[4]));
-						progressElement.style.color = progress > 5 ? '#303030' : '#aaa000';
-						progressElement.style.width = progressElement.innerHTML = '' + progress + '%';
-					}
-					showElement('progress1', !!m);
+				document.getElementById('statusText').textContent = text;
+				
+				var m = text.match(/([^(]+)\((\d+(\.\d+)?)\/(\d+)\)/);
+				if (m) {
+					var progress = Math.round(parseInt(m[2]) * 100 / parseInt(m[4]));
+					updateProgress(progress);
+					progressContainer.classList.add('visible');
 				}
 			},
 			totalDependencies: 0,
@@ -433,6 +742,7 @@
 					Module.setStatus('Preparing... (' + (this.totalDependencies - left) + '/' + this.totalDependencies + ')');
 			}
 		};
+
 		window.onerror = function(event) {
 			if (mounted)
 				FS.syncfs(false, function(err) {
@@ -462,20 +772,32 @@
 		function showElement(id, show) {
 			var e = document.getElementById(id);
 			if (!e) return;
-			e.style.display = show ? 'block' : 'none';
+			if (show) {
+				e.classList.remove('hidden');
+			} else {
+				e.classList.add('hidden');
+			}
 		}
+
 		Module.setStatus('Downloading...');
 
-
-
 		function startXash() {
-			showElement('loader1', false);
-			showElement('optionsTitle', false);
-			showElement('fSettings', false);
+			var btn = document.getElementById('launchBtn');
+			var btnText = document.getElementById('launchBtnText');
+			
+			btn.disabled = true;
+			btnText.innerHTML = '<span class="spinner"></span> Loading...';
+			
+			progressContainer.classList.add('visible');
+			document.getElementById('loaderContainer').classList.add('visible');
+			document.getElementById('mainContainer').style.display = 'none';
+			document.getElementById('canvas').style.display = 'block';
+			
 			setupFS();
 			Module.arguments = document.getElementById('iArgs').value.split(' ');
 			Module.run = run = savedRun;
-			if (radioChecked('Zip')) {
+			
+			if (radioChecked('Zip') || zipMods.length > 0) {
 				const zipper = document.getElementById('selectZip');
 				if (zipMods.length > 1) {
 					var mod_parts = [zipMods[0][3], zipMods[0][4], zipMods[0][2]];
@@ -486,10 +808,10 @@
 						}
 					}
 					fetchZIP(zipper.value, savedRun, mod_parts[0], mod_parts[1], mod_parts[2]);
-				} else {
+				} else if (zipMods.length === 1) {
 					fetchZIP(zipMods[0][0], savedRun, zipMods[0][3]);
 				}
-			} else if ((!zipMods.length && !pkgMods.length) || radioChecked('LocalZip')) {
+			} else if (radioChecked('LocalZip')) {
 				var reader = new FileReader();
 				reader.onload = function() {
 					mountZIP(reader.result);
@@ -506,9 +828,8 @@
 
 			window.addEventListener("beforeunload", function(e) {
 				var confirmationMessage = 'Leave the game?';
-
-				(e || window.event).returnValue = confirmationMessage; //Gecko + IE
-				return confirmationMessage; //Gecko + Webkit, Safari, Chrome etc.
+				(e || window.event).returnValue = confirmationMessage;
+				return confirmationMessage;
 			});
 		}
 
@@ -527,24 +848,21 @@
 				xhr.responseType = 'arraybuffer';
 
 				xhr.onprogress = function(event) {
-					var url = packageName;
 					var size;
 					if (event.total) size = event.total;
-					else size = zipMods[document.getElementById('selectZip').selectedIndex][2];
-					if (event.loaded) {
-						var total = size;
-						var loaded = event.loaded;
-						var num = 0;
-						if (Module['setStatus']) Module['setStatus']('Downloading data...');
-					} else if (!Module.dataFileDownloads) {
-						if (Module['setStatus']) Module['setStatus']('Downloading data...');
+					else size = zipMods[document.getElementById('selectZip').selectedIndex] ? zipMods[document.getElementById('selectZip').selectedIndex][2] : event.loaded;
+					if (event.loaded && size) {
+						var progress = Math.round(event.loaded * 100 / size);
+						updateProgress(progress);
+						Module.setStatus('Downloading data... (' + event.loaded + '/' + size + ')');
 					}
 				};
 				xhr.onerror = function(event) {
 					throw new Error("NetworkError");
-				}
+				};
 				xhr.onload = function(event) {
-					if (xhr.status == 200 || xhr.status == 304 || xhr.status == 206 || (xhr.status == 0 && xhr.response)) { // file URLs can return 0
+					if (xhr.status == 200 || xhr.status == 304 || xhr.status == 206 || (xhr.status == 0 && xhr.response)) {
+						updateProgress(100);
 						mountZIP(xhr.response);
 						cb();
 					} else {
@@ -567,19 +885,21 @@
 					xhr.onprogress = function(event) {
 						if (event.loaded) {
 							var loaded = event.loaded;
-							if (Module['setStatus']) Module['setStatus']('Downloading data... (' + ((finished * size_of_parts) + loaded) + '/' + total_size + ')');
-						} else if (!Module.dataFileDownloads) {
-							if (Module['setStatus']) Module['setStatus']('Downloading data...');
+							var totalLoaded = (finished * size_of_parts) + loaded;
+							var progress = Math.round(totalLoaded * 100 / total_size);
+							updateProgress(progress);
+							Module.setStatus('Downloading data... (' + totalLoaded + '/' + total_size + ')');
 						}
 					};
 					xhr.onerror = function(event) {
 						throw new Error("NetworkError");
-					}
+					};
 					xhr.onload = function(event) {
-						if (xhr.status == 200 || xhr.status == 304 || xhr.status == 206 || (xhr.status == 0 && xhr.response)) { // file URLs can return 0
+						if (xhr.status == 200 || xhr.status == 304 || xhr.status == 206 || (xhr.status == 0 && xhr.response)) {
 							finished++;
 							buffers.set(new Uint8Array(xhr.response), cur * size_of_parts);
 							if (finished == parts) {
+								updateProgress(100);
 								mountZIP(buffers);
 								cb();
 							}
@@ -627,24 +947,23 @@
 			Module.run = haltRun;
 			run = haltRun;
 
-			Module.setStatus("Xash3D downloaded!");
-			showElement('loader1', false);
-			showElement('optionsTitle', true);
+			Module.setStatus("Game is ready to start!");
+			document.getElementById('loaderContainer').classList.remove('visible');
 
 			if (window.indexedDB || window.mozIndexedDB || window.webkitIndexedDB || window.msIndexedDB)
 				showElement('idbHider', true);
 			prepareSelects();
-			showElement('fSettings', true);
 
 			ENV.XASH3D_GAMEDIR = gamedir;
-			ENV.XASH3D_RODIR = '/rodir'
+			ENV.XASH3D_RODIR = '/rodir';
 
 			function loadModule(name) {
 				var script = document.createElement('script');
 				script.onload = function() {
 					moduleCount++;
 					if (moduleCount == 3) {
-						Module.setStatus("Scripts downloaded!");
+						Module.setStatus("Game is ready to start and is downloaded!");
+						progressContainer.classList.remove('visible');
 					}
 				};
 				document.body.appendChild(script);
@@ -654,11 +973,10 @@
 			loadModule("server");
 			loadModule("client");
 			loadModule("menu");
-		};
+		}
 
 		Module.preInit = [skipRun];
 		Module.websocket = [];
-		//Module.websocket.url = 'wsproxy://the-swank.pp.ua:3000/'
 		Module.websocket.url = 'wsproxy://4.tcp.ngrok.io:10657/';
 		ENV = [];
 	</script>
@@ -681,20 +999,15 @@
 		script.src = "xash.js";
 		document.body.appendChild(script);
 	</script>
+
 	<script>
 		document.getElementById('show_console_log').addEventListener('change', function() {
-			if (document.getElementById('show_console_log').checked) document.getElementById('output').style.display = "block";
-			else document.getElementById('output').style.display = "none";
+			if (document.getElementById('show_console_log').checked) {
+				document.getElementById('output').style.display = "block";
+			} else {
+				document.getElementById('output').style.display = "none";
+			}
 		});
-		document.getElementById('label_show_console_log').style.display = "inline-block";
-		/*(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-		(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-		m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-		})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
-
-		ga('create', 'UA-68666752-4', 'auto');
-		ga('send', 'pageview');*/
 	</script>
 </body>
-
 </html>
