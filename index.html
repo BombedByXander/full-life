@@ -8,12 +8,12 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 	<meta name="MobileOptimized" content="2000">
 	<meta name="HandheldFriendly" content="true">
-	<title>ProdByXander - Half Life v3</title>
+	<title>ProdByXander - Half Life v4</title>
 	
 	<!-- Google Fonts -->
 	<link rel="preconnect" href="https://fonts.googleapis.com">
 	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-	<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@300..700&family=Google+Sans:ital,opsz,wght@0,17..18,400..700;1,17..18,400..700&display=swap" rel="stylesheet">
+	<link href="https://fonts.googleapis.com/css2?family=Google+Sans:ital,opsz,wght@0,17..18,400..700;1,17..18,400..700&display=swap" rel="stylesheet">
 
 	<style>
 		/* ===== CSS RESET & BASE ===== */
@@ -28,8 +28,11 @@
 			--foreground: hsl(0 0% 96%);
 			--card: hsl(0 0% 8%);
 			--card-foreground: hsl(0 0% 96%);
-			--primary: hsl(36 100% 50%);
-			--primary-dark: hsl(36 100% 35%);
+			--primary-hue: 36;
+			--accent-hue: 180;
+			--primary: hsl(var(--primary-hue) 100% 50%);
+			--primary-dark: hsl(var(--primary-hue) 100% 35%);
+			--accent: hsl(var(--accent-hue) 100% 50%);
 			--secondary: hsl(0 0% 14%);
 			--muted: hsl(0 0% 60%);
 			--border: hsl(0 0% 20%);
@@ -53,29 +56,157 @@
 			font-family: 'Orbitron', sans-serif;
 		}
 
-		/* ===== BACKGROUND GRID ===== */
-		.bg-grid {
+		/* ===== RAINBOW SPIRAL GRID CANVAS ===== */
+		#spiralCanvas {
 			position: fixed;
-			inset: -50%;
-			width: 200%;
-			height: 200%;
-			opacity: 0.05;
+			inset: 0;
 			pointer-events: none;
-			background-image: 
-				linear-gradient(hsla(36, 100%, 50%, 0.3) 1px, transparent 1px),
-				linear-gradient(90deg, hsla(36, 100%, 50%, 0.3) 1px, transparent 1px);
-			background-size: 50px 50px;
-			transform: skewX(-15deg);
-			animation: grid-slide 20s linear infinite;
+			opacity: 0.6;
+			z-index: 0;
 		}
 
-		@keyframes grid-slide {
-			0% {
-				transform: skewX(-15deg) translate(0, 0);
-			}
-			100% {
-				transform: skewX(-15deg) translate(50px, 50px);
-			}
+		/* ===== CONSTELLATION CANVAS ===== */
+		#constellationCanvas {
+			position: fixed;
+			inset: 0;
+			pointer-events: none;
+			opacity: 0.7;
+			z-index: 1;
+		}
+
+		/* ===== COLOR PICKER ===== */
+		.color-picker {
+			position: fixed;
+			top: 1rem;
+			right: 1rem;
+			z-index: 100;
+		}
+
+		.color-picker-btn {
+			width: 40px;
+			height: 40px;
+			border-radius: 50%;
+			background: var(--card);
+			border: 2px solid var(--primary);
+			cursor: pointer;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			transition: all 0.3s;
+			box-shadow: 0 0 15px hsla(var(--primary-hue), 100%, 50%, 0.3);
+		}
+
+		.color-picker-btn:hover {
+			transform: scale(1.1);
+			box-shadow: 0 0 25px hsla(var(--primary-hue), 100%, 50%, 0.5);
+		}
+
+		.color-picker-btn svg {
+			width: 20px;
+			height: 20px;
+			fill: var(--primary);
+		}
+
+		.color-picker-popup {
+			display: none;
+			position: absolute;
+			top: 50px;
+			right: 0;
+			background: var(--card);
+			border: 2px solid var(--primary);
+			border-radius: var(--radius);
+			padding: 1rem;
+			min-width: 250px;
+			box-shadow: 0 0 30px hsla(var(--primary-hue), 100%, 50%, 0.3);
+		}
+
+		.color-picker-popup.visible {
+			display: block;
+		}
+
+		.color-picker-section {
+			margin-bottom: 1rem;
+		}
+
+		.color-picker-section:last-child {
+			margin-bottom: 0;
+		}
+
+		.color-picker-label {
+			font-size: 0.75rem;
+			color: var(--primary);
+			margin-bottom: 0.5rem;
+			display: block;
+		}
+
+		.color-presets {
+			display: flex;
+			gap: 0.5rem;
+			flex-wrap: wrap;
+			margin-bottom: 0.5rem;
+		}
+
+		.color-preset {
+			width: 28px;
+			height: 28px;
+			border-radius: 50%;
+			border: 2px solid transparent;
+			cursor: pointer;
+			transition: all 0.2s;
+		}
+
+		.color-preset:hover {
+			transform: scale(1.15);
+		}
+
+		.color-preset.active {
+			border-color: white;
+		}
+
+		.color-slider {
+			width: 100%;
+			height: 8px;
+			-webkit-appearance: none;
+			appearance: none;
+			border-radius: 4px;
+			background: linear-gradient(to right, 
+				hsl(0, 100%, 50%), 
+				hsl(60, 100%, 50%), 
+				hsl(120, 100%, 50%), 
+				hsl(180, 100%, 50%), 
+				hsl(240, 100%, 50%), 
+				hsl(300, 100%, 50%), 
+				hsl(360, 100%, 50%)
+			);
+			cursor: pointer;
+		}
+
+		.color-slider::-webkit-slider-thumb {
+			-webkit-appearance: none;
+			width: 16px;
+			height: 16px;
+			border-radius: 50%;
+			background: white;
+			border: 2px solid var(--background);
+			cursor: pointer;
+			box-shadow: 0 0 5px rgba(0,0,0,0.5);
+		}
+
+		.color-preview {
+			display: flex;
+			gap: 0.5rem;
+			margin-top: 1rem;
+		}
+
+		.color-preview-box {
+			flex: 1;
+			height: 30px;
+			border-radius: 4px;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			font-size: 0.65rem;
+			font-weight: 600;
 		}
 
 		/* ===== MAIN CONTAINER ===== */
@@ -99,10 +230,28 @@
 		.title {
 			font-size: clamp(2rem, 8vw, 3.5rem);
 			font-weight: 700;
-			color: var(--primary);
-			text-shadow: 0 0 10px hsla(36, 100%, 50%, 0.5), 0 0 20px hsla(36, 100%, 50%, 0.3);
+			background: linear-gradient(90deg, 
+				hsl(0, 100%, 60%), 
+				hsl(60, 100%, 60%), 
+				hsl(120, 100%, 60%), 
+				hsl(180, 100%, 60%), 
+				hsl(240, 100%, 60%), 
+				hsl(300, 100%, 60%), 
+				hsl(360, 100%, 60%)
+			);
+			background-size: 200% auto;
+			-webkit-background-clip: text;
+			background-clip: text;
+			-webkit-text-fill-color: transparent;
+			animation: rainbow-text 3s linear infinite;
 			letter-spacing: 0.1em;
 			margin-bottom: 0.5rem;
+			text-shadow: 0 0 30px hsla(var(--primary-hue), 100%, 50%, 0.5);
+		}
+
+		@keyframes rainbow-text {
+			0% { background-position: 0% center; }
+			100% { background-position: 200% center; }
 		}
 
 		.subtitle {
@@ -117,11 +266,26 @@
 			width: 100%;
 			max-width: 500px;
 			background: linear-gradient(var(--card), var(--card)) padding-box,
-						linear-gradient(135deg, var(--primary), var(--primary-dark)) border-box;
+						linear-gradient(135deg, 
+							hsl(0, 100%, 50%), 
+							hsl(60, 100%, 50%), 
+							hsl(120, 100%, 50%), 
+							hsl(180, 100%, 50%), 
+							hsl(240, 100%, 50%), 
+							hsl(300, 100%, 50%)
+						) border-box;
 			border: 2px solid transparent;
 			border-radius: var(--radius);
 			padding: 2rem;
 			backdrop-filter: blur(10px);
+			animation: rainbow-border 4s linear infinite;
+			background-size: 100% 100%, 300% 300%;
+		}
+
+		@keyframes rainbow-border {
+			0% { background-position: 0 0, 0% 50%; }
+			50% { background-position: 0 0, 100% 50%; }
+			100% { background-position: 0 0, 0% 50%; }
 		}
 
 		/* ===== FORM ELEMENTS ===== */
@@ -134,7 +298,7 @@
 			font-size: 0.875rem;
 			font-weight: 500;
 			color: var(--primary);
-			text-shadow: 0 0 10px hsla(36, 100%, 50%, 0.3);
+			text-shadow: 0 0 10px hsla(var(--primary-hue), 100%, 50%, 0.3);
 			margin-bottom: 0.25rem;
 			letter-spacing: 0.05em;
 		}
@@ -210,7 +374,7 @@
 		.text-input:focus {
 			outline: none;
 			border-color: var(--primary);
-			box-shadow: 0 0 15px hsla(36, 100%, 50%, 0.3);
+			box-shadow: 0 0 15px hsla(var(--primary-hue), 100%, 50%, 0.3);
 		}
 
 		/* Separator */
@@ -218,6 +382,65 @@
 			height: 1px;
 			background: linear-gradient(90deg, transparent, var(--border), transparent);
 			margin: 1.5rem 0;
+		}
+
+		/* ===== DEVELOPER CONSOLE COMMANDS ===== */
+		.info-card {
+			width: 100%;
+			max-width: 500px;
+			background: var(--card);
+			border: 1px solid var(--primary);
+			border-radius: var(--radius);
+			padding: 1.25rem;
+			margin-top: 1.5rem;
+		}
+
+		.info-card-title {
+			font-size: 0.9rem;
+			font-weight: 600;
+			color: var(--primary);
+			margin-bottom: 1rem;
+			letter-spacing: 0.05em;
+		}
+
+		.command-item {
+			margin-bottom: 0.75rem;
+		}
+
+		.command-item:last-child {
+			margin-bottom: 0;
+		}
+
+		.command-name {
+			color: var(--primary);
+			font-weight: 500;
+			font-size: 0.85rem;
+		}
+
+		.command-desc {
+			color: var(--foreground);
+			font-size: 0.8rem;
+			opacity: 0.9;
+		}
+
+		.system-info-item {
+			display: flex;
+			gap: 0.5rem;
+			margin-bottom: 0.5rem;
+			font-size: 0.85rem;
+		}
+
+		.system-info-item:last-child {
+			margin-bottom: 0;
+		}
+
+		.system-info-label {
+			color: var(--primary);
+			font-weight: 500;
+		}
+
+		.system-info-value {
+			color: var(--foreground);
 		}
 
 		/* ===== PROGRESS BAR ===== */
@@ -294,7 +517,7 @@
 		.launch-btn:hover:not(:disabled) {
 			background: var(--primary);
 			color: var(--background);
-			box-shadow: 0 0 30px hsla(36, 100%, 50%, 0.5);
+			box-shadow: 0 0 30px hsla(var(--primary-hue), 100%, 50%, 0.5);
 		}
 
 		.launch-btn:disabled {
@@ -304,8 +527,8 @@
 		}
 
 		@keyframes pulse-glow {
-			0%, 100% { box-shadow: 0 0 20px hsla(36, 100%, 50%, 0.3); }
-			50% { box-shadow: 0 0 40px hsla(36, 100%, 50%, 0.6); }
+			0%, 100% { box-shadow: 0 0 20px hsla(var(--primary-hue), 100%, 50%, 0.3); }
+			50% { box-shadow: 0 0 40px hsla(var(--primary-hue), 100%, 50%, 0.6); }
 		}
 
 		/* Spinner */
@@ -316,6 +539,7 @@
 			border-top-color: currentColor;
 			border-radius: 50%;
 			animation: spin 1s linear infinite;
+			display: inline-block;
 		}
 
 		@keyframes spin {
@@ -436,6 +660,7 @@
 			bottom: 1rem;
 			text-align: center;
 			width: 100%;
+			z-index: 10;
 		}
 
 		.footer-text {
@@ -482,8 +707,36 @@
 </head>
 
 <body>
-	<!-- Background Grid -->
-	<div class="bg-grid"></div>
+	<!-- Rainbow Spiral Grid Canvas -->
+	<canvas id="spiralCanvas"></canvas>
+
+	<!-- Constellation Canvas -->
+	<canvas id="constellationCanvas"></canvas>
+
+	<!-- Color Picker -->
+	<div class="color-picker">
+		<button class="color-picker-btn" id="colorPickerBtn" onclick="toggleColorPicker()">
+			<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+				<path d="M12 15.5A3.5 3.5 0 0 1 8.5 12 3.5 3.5 0 0 1 12 8.5a3.5 3.5 0 0 1 3.5 3.5 3.5 3.5 0 0 1-3.5 3.5m7.43-2.53c.04-.32.07-.64.07-.97 0-.33-.03-.66-.07-1l2.11-1.63c.19-.15.24-.42.12-.64l-2-3.46c-.12-.22-.39-.31-.61-.22l-2.49 1c-.52-.39-1.06-.73-1.69-.98l-.37-2.65A.506.506 0 0 0 14 2h-4c-.25 0-.46.18-.5.42l-.37 2.65c-.63.25-1.17.59-1.69.98l-2.49-1c-.22-.09-.49 0-.61.22l-2 3.46c-.13.22-.07.49.12.64L4.57 11c-.04.34-.07.67-.07 1 0 .33.03.65.07.97l-2.11 1.66c-.19.15-.25.42-.12.64l2 3.46c.12.22.39.3.61.22l2.49-1.01c.52.4 1.06.74 1.69.99l.37 2.65c.04.24.25.42.5.42h4c.25 0 .46-.18.5-.42l.37-2.65c.63-.26 1.17-.59 1.69-.99l2.49 1.01c.22.08.49 0 .61-.22l2-3.46c.12-.22.07-.49-.12-.64l-2.11-1.66Z"/>
+			</svg>
+		</button>
+		<div class="color-picker-popup" id="colorPickerPopup">
+			<div class="color-picker-section">
+				<span class="color-picker-label">Primary Color</span>
+				<div class="color-presets" id="primaryPresets"></div>
+				<input type="range" class="color-slider" id="primarySlider" min="0" max="360" value="36">
+			</div>
+			<div class="color-picker-section">
+				<span class="color-picker-label">Accent Color</span>
+				<div class="color-presets" id="accentPresets"></div>
+				<input type="range" class="color-slider" id="accentSlider" min="0" max="360" value="180">
+			</div>
+			<div class="color-preview">
+				<div class="color-preview-box" id="primaryPreview">Primary</div>
+				<div class="color-preview-box" id="accentPreview">Accent</div>
+			</div>
+		</div>
+	</div>
 
 	<!-- Game Canvas (hidden until launch) -->
 	<canvas class="game-canvas" id="canvas" oncontextmenu="event.preventDefault()"></canvas>
@@ -507,7 +760,7 @@
 		<!-- Title Section -->
 		<div class="title-section">
 			<h1 class="title">ProdByXander</h1>
-			<h2 class="subtitle">Half-Life Web Version v3</h2>
+			<h2 class="subtitle">Half-Life Web Version v4</h2>
 		</div>
 
 		<!-- Settings Card -->
@@ -548,39 +801,6 @@
 
 			<div class="separator"></div>
 
-				<div class="form-section">
-    <label class="form-label">Developer Console Commands</label>
-    <div style="background: var(--secondary); border: 2px solid var(--border); border-radius: calc(var(--radius) - 4px); padding: 1rem;">
-        <div style="font-size: 0.875rem; color: var(--foreground); margin-bottom: 0.5rem;">
-            <strong style="color: var(--primary);">-dev 1 -game valve</strong> Gives Access to console
-        </div>
-        <div style="font-size: 0.875rem; color: var(--foreground); margin-bottom: 0.5rem;">
-            <strong style="color: var(--primary);">god</strong> You must put this in the command bar in game using the ` key, to activate.
-        </div>
-        <div style="font-size: 0.875rem; color: var(--foreground);">
-            <strong style="color: var(--primary);">Impulse 101</strong> You must put this in the command bar in game to spawn all weapons and get max ammo.
-        </div>
-    </div>
-</div>
-			
-			<!-- Information Box -->
-<div class="form-section">
-    <label class="form-label">System Information</label>
-    <div style="background: var(--secondary); border: 2px solid var(--border); border-radius: calc(var(--radius) - 4px); padding: 1rem;">
-        <div style="font-size: 0.875rem; color: var(--foreground); margin-bottom: 0.5rem;">
-            <strong style="color: var(--primary);">Engine:</strong> Xash3D FWGS
-        </div>
-        <div style="font-size: 0.875rem; color: var(--foreground); margin-bottom: 0.5rem;">
-            <strong style="color: var(--primary);">Memory:</strong> 2 GB RAM Allocated
-        </div>
-        <div style="font-size: 0.875rem; color: var(--foreground);">
-            <strong style="color: var(--primary);">Status:</strong> Ready to Launch
-        </div>
-    </div>
-</div>
-
-<div class="separator"></div>
-			
 			<!-- Progress Bar -->
 			<div class="progress-container" id="progressContainer">
 				<div class="progress-label">
@@ -604,6 +824,40 @@
 			</div>
 		</div>
 
+		<!-- Developer Console Commands -->
+		<div class="info-card">
+			<h3 class="info-card-title">Developer Console Commands</h3>
+			<div class="command-item">
+				<span class="command-name">-dev 1 -game valve</span>
+				<span class="command-desc"> Gives Access to console</span>
+			</div>
+			<div class="command-item">
+				<span class="command-name">god</span>
+				<span class="command-desc"> You must put this in the command bar in game using the ` key, to activate.</span>
+			</div>
+			<div class="command-item">
+				<span class="command-name">impulse 101</span>
+				<span class="command-desc"> You must put this in the command bar in game to spawn all weapons and get max ammo.</span>
+			</div>
+		</div>
+
+		<!-- System Information -->
+		<div class="info-card">
+			<h3 class="info-card-title">System Information</h3>
+			<div class="system-info-item">
+				<span class="system-info-label">Engine:</span>
+				<span class="system-info-value">Xash3D FWGS</span>
+			</div>
+			<div class="system-info-item">
+				<span class="system-info-label">Memory:</span>
+				<span class="system-info-value">2 GB RAM Allocated</span>
+			</div>
+			<div class="system-info-item">
+				<span class="system-info-label">Status:</span>
+				<span class="system-info-value" id="systemStatus">Ready to Launch</span>
+			</div>
+		</div>
+
 		<!-- Status Section -->
 		<div class="status-section">
 			<p class="status-text" id="status">Downloading...</p>
@@ -622,8 +876,341 @@
 
 	<!-- Footer -->
 	<footer class="footer">
-		<p class="footer-text">Engineered in the Black Mesa Research Facility by Xander <3</p>
+		<p class="footer-text">Engineered in the Black Mesa Research Facility by Xander &lt;3</p>
 	</footer>
+
+	<!-- Rainbow Spiral Grid Animation -->
+	<script>
+		(function() {
+			const canvas = document.getElementById('spiralCanvas');
+			const ctx = canvas.getContext('2d');
+			let animationId;
+			let time = 0;
+
+			function resize() {
+				canvas.width = window.innerWidth;
+				canvas.height = window.innerHeight;
+			}
+
+			resize();
+			window.addEventListener('resize', resize);
+
+			const gridSize = 50;
+
+			function animate() {
+				time += 0.02;
+				ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+				const centerX = canvas.width / 2;
+				const centerY = canvas.height / 2;
+
+				// Draw vertical lines
+				for (let x = 0; x < canvas.width + gridSize; x += gridSize) {
+					const distFromCenter = Math.abs(x - centerX);
+					const hue = (time * 50 + distFromCenter * 0.5) % 360;
+					const spiralOffset = Math.sin(time + distFromCenter * 0.01) * 20;
+					
+					ctx.beginPath();
+					ctx.moveTo(x + spiralOffset, 0);
+					
+					for (let y = 0; y < canvas.height; y += 10) {
+						const localSpiral = Math.sin(time * 2 + y * 0.01 + x * 0.005) * 15;
+						ctx.lineTo(x + spiralOffset + localSpiral, y);
+					}
+					
+					ctx.strokeStyle = `hsla(${hue}, 100%, 50%, 0.15)`;
+					ctx.lineWidth = 1;
+					ctx.stroke();
+				}
+
+				// Draw horizontal lines
+				for (let y = 0; y < canvas.height + gridSize; y += gridSize) {
+					const distFromCenter = Math.abs(y - centerY);
+					const hue = (time * 50 + distFromCenter * 0.5 + 180) % 360;
+					const spiralOffset = Math.cos(time + distFromCenter * 0.01) * 20;
+					
+					ctx.beginPath();
+					ctx.moveTo(0, y + spiralOffset);
+					
+					for (let x = 0; x < canvas.width; x += 10) {
+						const localSpiral = Math.cos(time * 2 + x * 0.01 + y * 0.005) * 15;
+						ctx.lineTo(x, y + spiralOffset + localSpiral);
+					}
+					
+					ctx.strokeStyle = `hsla(${hue}, 100%, 50%, 0.15)`;
+					ctx.lineWidth = 1;
+					ctx.stroke();
+				}
+
+				// Draw spiral from center
+				for (let angle = 0; angle < Math.PI * 20; angle += 0.1) {
+					const radius = angle * 15 + time * 30;
+					const x = centerX + Math.cos(angle + time) * radius;
+					const y = centerY + Math.sin(angle + time) * radius;
+					const hue = (angle * 20 + time * 100) % 360;
+					
+					if (radius < Math.max(canvas.width, canvas.height)) {
+						ctx.beginPath();
+						ctx.arc(x, y, 1.5, 0, Math.PI * 2);
+						ctx.fillStyle = `hsla(${hue}, 100%, 60%, 0.3)`;
+						ctx.fill();
+					}
+				}
+
+				animationId = requestAnimationFrame(animate);
+			}
+
+			animate();
+		})();
+	</script>
+
+	<!-- Constellation Background with Mouse Interaction -->
+	<script>
+		(function() {
+			const canvas = document.getElementById('constellationCanvas');
+			const ctx = canvas.getContext('2d');
+			const starCount = 60;
+			const connectionDistance = 120;
+			const mouseRadius = 150;
+			const attractStrength = 0.02;
+			const repelStrength = 0.05;
+			
+			let stars = [];
+			let mouse = { x: -1000, y: -1000, active: false };
+
+			function resize() {
+				canvas.width = window.innerWidth;
+				canvas.height = window.innerHeight;
+			}
+
+			function createStars() {
+				stars = [];
+				for (let i = 0; i < starCount; i++) {
+					stars.push({
+						x: Math.random() * canvas.width,
+						y: Math.random() * canvas.height,
+						vx: (Math.random() - 0.5) * 0.5,
+						vy: (Math.random() - 0.5) * 0.5,
+						size: Math.random() * 2 + 1,
+						hue: Math.random() * 360
+					});
+				}
+			}
+
+			resize();
+			createStars();
+
+			window.addEventListener('resize', () => {
+				resize();
+				createStars();
+			});
+
+			window.addEventListener('mousemove', (e) => {
+				mouse.x = e.clientX;
+				mouse.y = e.clientY;
+				mouse.active = true;
+			});
+
+			window.addEventListener('mouseleave', () => {
+				mouse.active = false;
+			});
+
+			function animate() {
+				ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+				// Draw mouse influence area
+				if (mouse.active) {
+					const gradient = ctx.createRadialGradient(
+						mouse.x, mouse.y, 0,
+						mouse.x, mouse.y, mouseRadius
+					);
+					gradient.addColorStop(0, 'hsla(280, 100%, 60%, 0.1)');
+					gradient.addColorStop(1, 'hsla(280, 100%, 60%, 0)');
+					ctx.beginPath();
+					ctx.arc(mouse.x, mouse.y, mouseRadius, 0, Math.PI * 2);
+					ctx.fillStyle = gradient;
+					ctx.fill();
+				}
+
+				// Update and draw stars
+				stars.forEach((star, i) => {
+					// Mouse interaction
+					if (mouse.active) {
+						const dx = mouse.x - star.x;
+						const dy = mouse.y - star.y;
+						const distance = Math.sqrt(dx * dx + dy * dy);
+
+						if (distance < mouseRadius && distance > 0) {
+							const force = (mouseRadius - distance) / mouseRadius;
+							const angle = Math.atan2(dy, dx);
+
+							if (distance < 50) {
+								// Repel when too close
+								star.vx -= Math.cos(angle) * force * repelStrength;
+								star.vy -= Math.sin(angle) * force * repelStrength;
+							} else {
+								// Attract when in range
+								star.vx += Math.cos(angle) * force * attractStrength;
+								star.vy += Math.sin(angle) * force * attractStrength;
+							}
+
+							star.hue = (star.hue + force * 5) % 360;
+						}
+					}
+
+					// Apply friction
+					star.vx *= 0.99;
+					star.vy *= 0.99;
+
+					// Clamp velocity
+					const maxSpeed = 3;
+					const speed = Math.sqrt(star.vx * star.vx + star.vy * star.vy);
+					if (speed > maxSpeed) {
+						star.vx = (star.vx / speed) * maxSpeed;
+						star.vy = (star.vy / speed) * maxSpeed;
+					}
+
+					// Update position
+					star.x += star.vx;
+					star.y += star.vy;
+					star.hue = (star.hue + 0.5) % 360;
+
+					// Wrap around edges
+					if (star.x < 0) star.x = canvas.width;
+					if (star.x > canvas.width) star.x = 0;
+					if (star.y < 0) star.y = canvas.height;
+					if (star.y > canvas.height) star.y = 0;
+
+					// Draw star with glow
+					ctx.beginPath();
+					ctx.arc(star.x, star.y, star.size, 0, Math.PI * 2);
+					ctx.fillStyle = `hsla(${star.hue}, 100%, 60%, 0.8)`;
+					ctx.shadowBlur = 10;
+					ctx.shadowColor = `hsla(${star.hue}, 100%, 60%, 0.5)`;
+					ctx.fill();
+
+					// Draw connection to mouse
+					if (mouse.active) {
+						const dx = mouse.x - star.x;
+						const dy = mouse.y - star.y;
+						const distance = Math.sqrt(dx * dx + dy * dy);
+
+						if (distance < mouseRadius) {
+							const opacity = (1 - distance / mouseRadius) * 0.4;
+							ctx.beginPath();
+							ctx.moveTo(star.x, star.y);
+							ctx.lineTo(mouse.x, mouse.y);
+							ctx.strokeStyle = `hsla(${star.hue}, 100%, 70%, ${opacity})`;
+							ctx.lineWidth = 0.5;
+							ctx.stroke();
+						}
+					}
+
+					// Draw connections to nearby stars
+					for (let j = i + 1; j < stars.length; j++) {
+						const other = stars[j];
+						const dx = star.x - other.x;
+						const dy = star.y - other.y;
+						const distance = Math.sqrt(dx * dx + dy * dy);
+
+						if (distance < connectionDistance) {
+							const opacity = (1 - distance / connectionDistance) * 0.3;
+							const gradient = ctx.createLinearGradient(star.x, star.y, other.x, other.y);
+							gradient.addColorStop(0, `hsla(${star.hue}, 100%, 60%, ${opacity})`);
+							gradient.addColorStop(1, `hsla(${other.hue}, 100%, 60%, ${opacity})`);
+							
+							ctx.beginPath();
+							ctx.moveTo(star.x, star.y);
+							ctx.lineTo(other.x, other.y);
+							ctx.strokeStyle = gradient;
+							ctx.lineWidth = 0.5;
+							ctx.stroke();
+						}
+					}
+				});
+
+				ctx.shadowBlur = 0;
+				requestAnimationFrame(animate);
+			}
+
+			animate();
+		})();
+	</script>
+
+	<!-- Color Picker Logic -->
+	<script>
+		const presetColors = [
+			{ name: 'Red', hue: 0 },
+			{ name: 'Orange', hue: 36 },
+			{ name: 'Yellow', hue: 60 },
+			{ name: 'Green', hue: 120 },
+			{ name: 'Cyan', hue: 180 },
+			{ name: 'Blue', hue: 220 },
+			{ name: 'Purple', hue: 280 },
+			{ name: 'Pink', hue: 320 }
+		];
+
+		let primaryHue = 36;
+		let accentHue = 180;
+
+		function updateTheme() {
+			document.documentElement.style.setProperty('--primary-hue', primaryHue);
+			document.documentElement.style.setProperty('--accent-hue', accentHue);
+			document.documentElement.style.setProperty('--primary', `hsl(${primaryHue}, 100%, 50%)`);
+			document.documentElement.style.setProperty('--primary-dark', `hsl(${primaryHue}, 100%, 35%)`);
+			document.documentElement.style.setProperty('--accent', `hsl(${accentHue}, 100%, 50%)`);
+			
+			document.getElementById('primaryPreview').style.background = `hsl(${primaryHue}, 100%, 50%)`;
+			document.getElementById('primaryPreview').style.color = primaryHue > 40 && primaryHue < 200 ? '#000' : '#fff';
+			document.getElementById('accentPreview').style.background = `hsl(${accentHue}, 100%, 50%)`;
+			document.getElementById('accentPreview').style.color = accentHue > 40 && accentHue < 200 ? '#000' : '#fff';
+		}
+
+		function createPresets() {
+			const primaryContainer = document.getElementById('primaryPresets');
+			const accentContainer = document.getElementById('accentPresets');
+			
+			presetColors.forEach(color => {
+				const primaryBtn = document.createElement('button');
+				primaryBtn.className = 'color-preset';
+				primaryBtn.style.background = `hsl(${color.hue}, 100%, 50%)`;
+				primaryBtn.onclick = () => {
+					primaryHue = color.hue;
+					document.getElementById('primarySlider').value = color.hue;
+					updateTheme();
+				};
+				primaryContainer.appendChild(primaryBtn);
+				
+				const accentBtn = document.createElement('button');
+				accentBtn.className = 'color-preset';
+				accentBtn.style.background = `hsl(${color.hue}, 100%, 50%)`;
+				accentBtn.onclick = () => {
+					accentHue = color.hue;
+					document.getElementById('accentSlider').value = color.hue;
+					updateTheme();
+				};
+				accentContainer.appendChild(accentBtn);
+			});
+		}
+
+		function toggleColorPicker() {
+			const popup = document.getElementById('colorPickerPopup');
+			popup.classList.toggle('visible');
+		}
+
+		document.getElementById('primarySlider').addEventListener('input', (e) => {
+			primaryHue = parseInt(e.target.value);
+			updateTheme();
+		});
+
+		document.getElementById('accentSlider').addEventListener('input', (e) => {
+			accentHue = parseInt(e.target.value);
+			updateTheme();
+		});
+
+		createPresets();
+		updateTheme();
+	</script>
 
 	<!-- BrowserFS -->
 	<script type='text/javascript' src='browserfs.min.js'></script>
@@ -821,6 +1408,7 @@
 			btn.disabled = true;
 			btnText.innerHTML = '<span class="spinner"></span> Loading...';
 			
+			document.getElementById('systemStatus').textContent = 'Loading...';
 			progressContainer.classList.add('visible');
 			document.getElementById('loaderContainer').classList.add('visible');
 			document.getElementById('mainContainer').style.display = 'none';
@@ -981,6 +1569,7 @@
 			run = haltRun;
 
 			Module.setStatus("Game is ready to start!");
+			document.getElementById('systemStatus').textContent = 'Ready to Launch';
 			document.getElementById('loaderContainer').classList.remove('visible');
 
 			if (window.indexedDB || window.mozIndexedDB || window.webkitIndexedDB || window.msIndexedDB)
