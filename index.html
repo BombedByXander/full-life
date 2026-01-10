@@ -13,8 +13,8 @@
 	<!-- Google Fonts -->
 	<link rel="preconnect" href="https://fonts.googleapis.com">
 	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Google+Sans:ital,opsz,wght@0,17..18,400..700;1,17..18,400..700&display=swap" rel="stylesheet">
-
+	<link href="https://fonts.googleapis.com/css2?family=Google+Sans:ital,opsz,wght@0,17..18,400..700;1,17..18,400..700&display=swap" rel="stylesheet">
+	
 	<style>
 		/* ===== CSS RESET & BASE ===== */
 		*, *::before, *::after {
@@ -30,7 +30,7 @@
 			--card-foreground: hsl(0 0% 96%);
 			--primary-hue: 36;
 			--accent-hue: 180;
-			--primary: hsl(${primaryHue}, 0%, 100%)
+			--primary: hsl(var(--primary-hue) 100% 50%);
 			--primary-dark: hsl(var(--primary-hue) 100% 35%);
 			--accent: hsl(var(--accent-hue) 100% 50%);
 			--secondary: hsl(0 0% 14%);
@@ -225,31 +225,36 @@
 		.title-section {
 			text-align: center;
 			margin-bottom: 2.5rem;
+			animation: float 6s ease-in-out infinite;
+		}
+
+		@keyframes float {
+			0%, 100% { transform: translateY(0); }
+			50% { transform: translateY(-10px); }
 		}
 
 		.title {
 			font-size: clamp(2rem, 8vw, 3.5rem);
 			font-weight: 700;
 			background: linear-gradient(90deg, 
-				hsl(0, 100%, 60%), 
-				hsl(60, 100%, 60%), 
-				hsl(120, 100%, 60%), 
-				hsl(180, 100%, 60%), 
-				hsl(240, 100%, 60%), 
-				hsl(300, 100%, 60%), 
-				hsl(360, 100%, 60%)
+				hsl(0, 100%, 70%), 
+				hsl(60, 100%, 70%), 
+				hsl(120, 100%, 70%), 
+				hsl(180, 100%, 70%), 
+				hsl(240, 100%, 70%), 
+				hsl(300, 100%, 70%), 
+				hsl(360, 100%, 70%)
 			);
 			background-size: 200% auto;
 			-webkit-background-clip: text;
 			background-clip: text;
 			-webkit-text-fill-color: transparent;
-			animation: rainbow-text 3s linear infinite;
+			animation: rainbow-shimmer 3s linear infinite;
 			letter-spacing: 0.1em;
 			margin-bottom: 0.5rem;
-			text-shadow: 0 0 30px hsla(var(--primary-hue), 100%, 50%, 0.5);
 		}
 
-		@keyframes rainbow-text {
+		@keyframes rainbow-shimmer {
 			0% { background-position: 0% center; }
 			100% { background-position: 200% center; }
 		}
@@ -259,12 +264,39 @@
 			color: hsla(0, 0%, 96%, 0.8);
 			font-weight: 300;
 			letter-spacing: 0.05em;
+			animation: glow-pulse 2s ease-in-out infinite alternate;
+		}
+
+		@keyframes glow-pulse {
+			from {
+				text-shadow: 0 0 10px currentColor, 0 0 20px currentColor;
+			}
+			to {
+				text-shadow: 0 0 20px currentColor, 0 0 40px currentColor, 0 0 60px currentColor;
+			}
 		}
 
 		/* ===== SETTINGS CARD ===== */
 		.settings-card {
+			position: relative;
 			width: 100%;
 			max-width: 500px;
+			background: linear-gradient(135deg, hsla(0, 0%, 8%, 0.9), hsla(0, 0%, 8%, 0.7));
+			backdrop-filter: blur(20px);
+			border: 2px solid transparent;
+			border-radius: var(--radius);
+			padding: 2rem;
+			animation: rainbow-border 4s linear infinite;
+			background-size: 100% 100%, 300% 300%;
+			box-shadow: 0 8px 32px hsla(0, 0%, 0%, 0.3), inset 0 1px 0 hsla(255, 255%, 255%, 0.1);
+			transition: transform 0.3s ease, box-shadow 0.3s ease;
+			overflow: hidden;
+		}
+
+		.settings-card::before {
+			content: '';
+			position: absolute;
+			inset: 0;
 			background: linear-gradient(var(--card), var(--card)) padding-box,
 						linear-gradient(135deg, 
 							hsl(0, 100%, 50%), 
@@ -276,10 +308,32 @@
 						) border-box;
 			border: 2px solid transparent;
 			border-radius: var(--radius);
-			padding: 2rem;
-			backdrop-filter: blur(10px);
 			animation: rainbow-border 4s linear infinite;
 			background-size: 100% 100%, 300% 300%;
+			pointer-events: none;
+		}
+
+		/* Scanner line effect */
+		.settings-card::after {
+			content: '';
+			position: absolute;
+			top: 0;
+			left: -100%;
+			width: 50%;
+			height: 100%;
+			background: linear-gradient(90deg, transparent, hsla(180, 100%, 50%, 0.1), hsla(180, 100%, 70%, 0.2), hsla(180, 100%, 50%, 0.1), transparent);
+			animation: scanner-sweep 4s ease-in-out infinite;
+			pointer-events: none;
+		}
+
+		@keyframes scanner-sweep {
+			0% { left: -50%; }
+			100% { left: 150%; }
+		}
+
+		.settings-card:hover {
+			transform: translateY(-4px);
+			box-shadow: 0 12px 40px hsla(0, 0%, 0%, 0.4), 0 0 30px hsla(var(--primary-hue), 100%, 50%, 0.2);
 		}
 
 		@keyframes rainbow-border {
@@ -291,10 +345,14 @@
 		/* ===== FORM ELEMENTS ===== */
 		.form-section {
 			margin-bottom: 1.5rem;
+			position: relative;
+			z-index: 1;
 		}
 
 		.form-label {
-			display: block;
+			display: flex;
+			align-items: center;
+			gap: 0.5rem;
 			font-size: 0.875rem;
 			font-weight: 500;
 			color: var(--primary);
@@ -303,10 +361,19 @@
 			letter-spacing: 0.05em;
 		}
 
+		.form-label svg {
+			width: 16px;
+			height: 16px;
+			stroke: var(--primary);
+			stroke-width: 2;
+			fill: none;
+		}
+
 		.form-hint {
 			font-size: 0.75rem;
 			color: var(--muted);
 			margin-bottom: 1rem;
+			margin-left: 1.5rem;
 		}
 
 		/* Radio Group */
@@ -328,8 +395,76 @@
 			color: var(--primary);
 		}
 
+		.radio-item:hover svg {
+			stroke: var(--primary);
+		}
+
+		.radio-item svg {
+			width: 16px;
+			height: 16px;
+			stroke: var(--muted);
+			stroke-width: 2;
+			fill: none;
+			transition: stroke 0.2s;
+		}
+
 		.radio-item input[type="radio"] {
 			appearance: none;
+			-webkit-appearance: none;
+			width: 18px;
+			height: 18px;
+			border: 2px solid var(--primary);
+			border-radius: 50%;
+			background: transparent;
+			cursor: pointer;
+			position: relative;
+			transition: all 0.2s;
+		}
+
+		.radio-item input[type="radio"]:checked {
+			background: var(--primary);
+			box-shadow: 0 0 10px var(--primary);
+		}
+
+		.radio-item input[type="radio"]:checked::after {
+			content: '';
+			position: absolute;
+			top: 50%;
+			left: 50%;
+			transform: translate(-50%, -50%);
+			width: 6px;
+			height: 6px;
+			background: var(--background);
+			border-radius: 50%;
+		}
+
+		/* Text Input */
+		.text-input {
+			width: 100%;
+			padding: 0.75rem 1rem;
+			background: hsla(0, 0%, 14%, 0.5);
+			border: 2px solid var(--border);
+			border-radius: calc(var(--radius) - 4px);
+			color: var(--foreground);
+			font-family: 'Lucida Console', Monaco, monospace;
+			font-size: 0.85rem;
+			transition: all 0.3s;
+		}
+
+		.text-input:focus {
+			outline: none;
+			border-color: var(--primary);
+			box-shadow: 0 0 15px hsla(var(--primary-hue), 100%, 50%, 0.3);
+		}
+
+		/* Separator */
+		.separator {
+			height: 1px;
+			background: linear-gradient(90deg, transparent, var(--border), transparent);
+			margin: 1.5rem 0;
+			position: relative;
+			z-index: 1;
+		}
 			-webkit-appearance: none;
 			width: 18px;
 			height: 18px;
@@ -494,6 +629,42 @@
 		}
 
 		/* ===== LAUNCH BUTTON ===== */
+		.launch-btn-wrapper {
+			position: relative;
+			display: inline-block;
+		}
+
+		/* Pulsing rings */
+		.launch-btn-wrapper::before,
+		.launch-btn-wrapper::after {
+			content: '';
+			position: absolute;
+			inset: -8px;
+			border-radius: calc(var(--radius) - 4px);
+			border: 2px solid transparent;
+			background: linear-gradient(90deg, 
+				hsla(0, 100%, 50%, 0.5), 
+				hsla(120, 100%, 50%, 0.5), 
+				hsla(240, 100%, 50%, 0.5),
+				hsla(0, 100%, 50%, 0.5)
+			) border-box;
+			-webkit-mask: linear-gradient(#fff 0 0) padding-box, linear-gradient(#fff 0 0);
+			mask: linear-gradient(#fff 0 0) padding-box, linear-gradient(#fff 0 0);
+			-webkit-mask-composite: xor;
+			mask-composite: exclude;
+			animation: pulse-ring-expand 2s ease-out infinite;
+			pointer-events: none;
+		}
+
+		.launch-btn-wrapper::after {
+			animation-delay: 1s;
+		}
+
+		@keyframes pulse-ring-expand {
+			0% { inset: 0; opacity: 1; }
+			100% { inset: -20px; opacity: 0; }
+		}
+
 		.launch-btn {
 			display: flex;
 			align-items: center;
@@ -506,18 +677,51 @@
 			font-weight: 600;
 			letter-spacing: 0.05em;
 			background: transparent;
-			border: 2px solid var(--primary);
 			color: var(--primary);
 			border-radius: calc(var(--radius) - 4px);
 			cursor: pointer;
 			transition: all 0.3s;
 			animation: pulse-glow 2s ease-in-out infinite;
+			/* Rainbow border */
+			border: 3px solid transparent;
+			background: 
+				linear-gradient(var(--background), var(--background)) padding-box,
+				linear-gradient(90deg, 
+					hsl(0, 100%, 50%), 
+					hsl(60, 100%, 50%), 
+					hsl(120, 100%, 50%), 
+					hsl(180, 100%, 50%), 
+					hsl(240, 100%, 50%), 
+					hsl(300, 100%, 50%), 
+					hsl(360, 100%, 50%)
+				) border-box;
+			background-size: 100% 100%, 300% 100%;
+			animation: rainbow-border-flow 3s linear infinite, pulse-glow 2s ease-in-out infinite;
+		}
+
+		@keyframes rainbow-border-flow {
+			0% { background-position: 0% 0%, 0% 0%; }
+			100% { background-position: 0% 0%, 300% 0%; }
 		}
 
 		.launch-btn:hover:not(:disabled) {
-			background: var(--primary);
+			background: 
+				linear-gradient(var(--primary), var(--primary)) padding-box,
+				linear-gradient(90deg, 
+					hsl(0, 100%, 50%), 
+					hsl(60, 100%, 50%), 
+					hsl(120, 100%, 50%), 
+					hsl(180, 100%, 50%), 
+					hsl(240, 100%, 50%), 
+					hsl(300, 100%, 50%), 
+					hsl(360, 100%, 50%)
+				) border-box;
 			color: var(--background);
-			box-shadow: 0 0 30px hsla(var(--primary-hue), 100%, 50%, 0.5);
+			transform: scale(1.05);
+			box-shadow: 
+				0 0 30px hsla(0, 100%, 50%, 0.3),
+				0 0 50px hsla(120, 100%, 50%, 0.2),
+				0 0 70px hsla(240, 100%, 50%, 0.1);
 		}
 
 		.launch-btn:disabled {
@@ -527,8 +731,24 @@
 		}
 
 		@keyframes pulse-glow {
-			0%, 100% { box-shadow: 0 0 20px hsla(var(--primary-hue), 100%, 50%, 0.3); }
-			50% { box-shadow: 0 0 40px hsla(var(--primary-hue), 100%, 50%, 0.6); }
+			0%, 100% { 
+				box-shadow: 
+					0 0 20px hsla(0, 100%, 60%, 0.4), 
+					0 0 40px hsla(60, 100%, 50%, 0.3), 
+					0 0 60px hsla(180, 100%, 50%, 0.2);
+			}
+			33% { 
+				box-shadow: 
+					0 0 20px hsla(120, 100%, 50%, 0.4), 
+					0 0 40px hsla(180, 100%, 50%, 0.3), 
+					0 0 60px hsla(240, 100%, 60%, 0.2);
+			}
+			66% { 
+				box-shadow: 
+					0 0 20px hsla(240, 100%, 60%, 0.4), 
+					0 0 40px hsla(280, 100%, 60%, 0.3), 
+					0 0 60px hsla(0, 100%, 60%, 0.2);
+			}
 		}
 
 		/* Spinner */
@@ -551,30 +771,70 @@
 			display: none;
 			justify-content: center;
 			margin-top: 2rem;
+			position: relative;
+			z-index: 1;
 		}
 
 		.loader-container.visible {
 			display: flex;
 		}
 
-		.loader {
-			width: 60px;
-			height: 60px;
-			border: 4px solid var(--secondary);
-			border-top-color: var(--primary);
+		/* Triple ring rainbow loader */
+		.loader-rings {
+			position: relative;
+			width: 80px;
+			height: 80px;
+		}
+
+		.loader-rings::before,
+		.loader-rings::after,
+		.loader-rings span {
+			content: '';
+			position: absolute;
 			border-radius: 50%;
+			border: 3px solid transparent;
+		}
+
+		.loader-rings::before {
+			inset: 0;
+			border-top-color: hsl(0, 100%, 60%);
+			border-right-color: hsl(60, 100%, 60%);
 			animation: spin 1.5s linear infinite;
+		}
+
+		.loader-rings::after {
+			inset: 10px;
+			border-top-color: hsl(120, 100%, 60%);
+			border-right-color: hsl(180, 100%, 60%);
+			animation: spin 1s linear infinite reverse;
+		}
+
+		.loader-rings span {
+			inset: 20px;
+			border-top-color: hsl(240, 100%, 60%);
+			border-right-color: hsl(300, 100%, 60%);
+			animation: spin 0.75s linear infinite;
 		}
 
 		/* ===== STATUS TEXT ===== */
 		.status-section {
 			margin-top: 1.5rem;
 			text-align: center;
+			min-height: 24px;
 		}
 
 		.status-text {
 			font-size: 0.875rem;
 			color: var(--muted);
+		}
+
+		.typewriter-cursor {
+			animation: blink 1s step-end infinite;
+			color: var(--primary);
+		}
+
+		@keyframes blink {
+			50% { opacity: 0; }
 		}
 
 		/* ===== CANVAS (GAME) ===== */
@@ -665,7 +925,20 @@
 
 		.footer-text {
 			font-size: 0.7rem;
-			color: hsla(0, 0%, 60%, 0.5);
+			background: linear-gradient(90deg, 
+				hsl(0, 100%, 70%), 
+				hsl(60, 100%, 70%), 
+				hsl(120, 100%, 70%), 
+				hsl(180, 100%, 70%), 
+				hsl(240, 100%, 70%), 
+				hsl(300, 100%, 70%), 
+				hsl(360, 100%, 70%)
+			);
+			background-size: 200% auto;
+			-webkit-background-clip: text;
+			background-clip: text;
+			-webkit-text-fill-color: transparent;
+			animation: rainbow-shimmer 3s linear infinite;
 		}
 	</style>
 
@@ -760,27 +1033,37 @@
 		<!-- Title Section -->
 		<div class="title-section">
 			<h1 class="title">ProdByXander</h1>
-			<h2 class="subtitle">Half-Life Web Version v4</h2>
+			<h2 class="subtitle">Half-Life Web Version V4</h2>
 		</div>
 
 		<!-- Settings Card -->
 		<div class="settings-card" id="settingsCard">
 			<!-- Filesystem Selection -->
 			<div class="form-section">
-				<label class="form-label">Select filesystem for save and restore:</label>
+				<label class="form-label">
+					<!-- Database icon -->
+					<svg viewBox="0 0 24 24"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/><path d="M3 12c0 1.66 4 3 9 3s9-1.34 9-3"/></svg>
+					Select filesystem for save and restore:
+				</label>
 				<span class="form-hint">(Default IndexedDB)</span>
 				<div class="radio-group">
 					<label class="radio-item" id="idbHider">
 						<input type="radio" name="filesystem" id="rIndexedDB" checked>
+						<!-- HardDrive icon -->
+						<svg viewBox="0 0 24 24"><line x1="22" x2="2" y1="12" y2="12"/><path d="M5.45 5.11 2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"/><line x1="6" x2="6.01" y1="16" y2="16"/><line x1="10" x2="10.01" y1="16" y2="16"/></svg>
 						<span>IndexedDB</span>
 					</label>
 					<label class="radio-item">
 						<input type="radio" name="filesystem" id="rLocalStorage">
-						<span>in Local storage</span>
+						<!-- Database icon -->
+						<svg viewBox="0 0 24 24"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/><path d="M3 12c0 1.66 4 3 9 3s9-1.34 9-3"/></svg>
+						<span>Local Storage</span>
 					</label>
 					<label class="radio-item">
 						<input type="radio" name="filesystem" id="rNone">
-						<span>in RAM</span>
+						<!-- CPU icon -->
+						<svg viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="2"/><rect x="9" y="9" width="6" height="6"/><path d="M15 2v2"/><path d="M15 20v2"/><path d="M2 15h2"/><path d="M2 9h2"/><path d="M20 15h2"/><path d="M20 9h2"/><path d="M9 2v2"/><path d="M9 20v2"/></svg>
+						<span>RAM (Temporary)</span>
 					</label>
 				</div>
 			</div>
@@ -795,8 +1078,12 @@
 
 			<!-- Command Line Arguments -->
 			<div class="form-section">
-				<label class="form-label" for="iArgs">Command-line arguments:</label>
-				<input type="text" class="text-input" id="iArgs" value="-dev 0 -game valve">
+				<label class="form-label" for="iArgs">
+					<!-- Terminal icon -->
+					<svg viewBox="0 0 24 24"><polyline points="4 17 10 11 4 5"/><line x1="12" x2="20" y1="19" y2="19"/></svg>
+					Command-line arguments:
+				</label>
+				<input type="text" class="text-input" id="iArgs" value="-dev 0 -game valve" placeholder="-dev 0 -game valve">
 			</div>
 
 			<div class="separator"></div>
@@ -814,13 +1101,15 @@
 			</div>
 
 			<!-- Launch Button -->
-			<button class="launch-btn" id="launchBtn" onclick="startXash();">
-				<span id="launchBtnText">Launch Half Life!</span>
-			</button>
+			<div class="launch-btn-wrapper">
+				<button class="launch-btn" id="launchBtn" onclick="startXash();">
+					<span id="launchBtnText">Launch Half Life!</span>
+				</button>
+			</div>
 
 			<!-- Loader -->
 			<div class="loader-container" id="loaderContainer">
-				<div class="loader"></div>
+				<div class="loader-rings"><span></span></div>
 			</div>
 		</div>
 
@@ -860,7 +1149,7 @@
 
 		<!-- Status Section -->
 		<div class="status-section">
-			<p class="status-text" id="status">Downloading...</p>
+			<p class="status-text" id="status"><span id="typewriterText"></span><span class="typewriter-cursor">|</span></p>
 		</div>
 
 		<!-- Console Output (hidden by default) -->
@@ -876,7 +1165,7 @@
 
 	<!-- Footer -->
 	<footer class="footer">
-		<p class="footer-text">Engineered in the Black Mesa Research Facility by Xander &lt;3</p>
+		<p class="footer-text">Engineered in the Black Mesa Research Facility by Xander</p>
 	</footer>
 
 	<!-- Rainbow Spiral Grid Animation -->
@@ -1140,6 +1429,8 @@
 	<!-- Color Picker Logic -->
 	<script>
 		const presetColors = [
+			{ name: 'White', hue: 0, isNeutral: true, lightness: 100 },
+			{ name: 'Black', hue: 0, isNeutral: true, lightness: 10 },
 			{ name: 'Red', hue: 0 },
 			{ name: 'Orange', hue: 36 },
 			{ name: 'Yellow', hue: 60 },
@@ -1150,8 +1441,8 @@
 			{ name: 'Pink', hue: 320 }
 		];
 
-		let primaryHue = 36;
-		let accentHue = 180;
+		let primaryHue = 0; // White default
+		let accentHue = 0; // White default
 
 		function updateTheme() {
 			document.documentElement.style.setProperty('--primary-hue', primaryHue);
@@ -1173,7 +1464,9 @@
 			presetColors.forEach(color => {
 				const primaryBtn = document.createElement('button');
 				primaryBtn.className = 'color-preset';
-				primaryBtn.style.background = `hsl(${color.hue}, 100%, 50%)`;
+				primaryBtn.style.background = color.isNeutral 
+					? `hsl(0, 0%, ${color.lightness}%)` 
+					: `hsl(${color.hue}, 100%, 50%)`;
 				primaryBtn.onclick = () => {
 					primaryHue = color.hue;
 					document.getElementById('primarySlider').value = color.hue;
@@ -1183,7 +1476,9 @@
 				
 				const accentBtn = document.createElement('button');
 				accentBtn.className = 'color-preset';
-				accentBtn.style.background = `hsl(${color.hue}, 100%, 50%)`;
+				accentBtn.style.background = color.isNeutral 
+					? `hsl(0, 0%, ${color.lightness}%)` 
+					: `hsl(${color.hue}, 100%, 50%)`;
 				accentBtn.onclick = () => {
 					accentHue = color.hue;
 					document.getElementById('accentSlider').value = color.hue;
@@ -1210,6 +1505,94 @@
 
 		createPresets();
 		updateTheme();
+	</script>
+
+	<!-- Typewriter Effect -->
+	<script>
+		(function() {
+			const idleMessages = [
+				"Ready to enter Ku Klux Klan?",
+				"Welcome to the KKK!",
+				"Fuck tech, this sites unblockable lmao",
+				"Im bored idk what im putting here",
+				"Gordon Freeman is a fucking pedophile, he fucks the headcrabs!",
+				"Game is ready to launch!",
+				"Heil hitler!"
+			];
+
+			const loadingMessages = [
+				"Initializing Reactor systems...",
+				"Loading valve game assets...",
+				"Downloading & Inserting Textures...",
+				"Fucking around with the flux capacitor...",
+				"Connecting to Ku Klux Klan's public wifi...",
+				"Finishing loading particles lmao..."
+			];
+
+			let currentMessages = idleMessages;
+			let messageIndex = 0;
+			let charIndex = 0;
+			let isDeleting = false;
+			let isPaused = false;
+			let isLoading = false;
+
+			const typewriterEl = document.getElementById('typewriterText');
+			const typingSpeed = 60;
+			const deletingSpeed = 30;
+			const pauseDuration = 2500;
+
+			function type() {
+				const currentMessage = currentMessages[messageIndex];
+
+				if (isPaused) {
+					setTimeout(() => {
+						isPaused = false;
+						isDeleting = true;
+						type();
+					}, pauseDuration);
+					return;
+				}
+
+				if (isDeleting) {
+					if (charIndex > 0) {
+						charIndex--;
+						typewriterEl.textContent = currentMessage.substring(0, charIndex);
+						setTimeout(type, deletingSpeed);
+					} else {
+						isDeleting = false;
+						messageIndex = (messageIndex + 1) % currentMessages.length;
+						setTimeout(type, typingSpeed);
+					}
+					return;
+				}
+
+				if (charIndex < currentMessage.length) {
+					charIndex++;
+					typewriterEl.textContent = currentMessage.substring(0, charIndex);
+					setTimeout(type, typingSpeed);
+				} else {
+					isPaused = true;
+					setTimeout(type, 100);
+				}
+			}
+
+			// Start typing
+			type();
+
+			// Expose function to switch to loading messages
+			window.setTypewriterLoading = function(loading) {
+				if (loading !== isLoading) {
+					isLoading = loading;
+					currentMessages = loading ? loadingMessages : idleMessages;
+					messageIndex = 0;
+					charIndex = 0;
+					isDeleting = false;
+					isPaused = false;
+					typewriterEl.textContent = '';
+					typewriterEl.style.color = loading ? 'var(--primary)' : 'var(--muted)';
+				}
+			};
+		})();
 	</script>
 
 	<!-- BrowserFS -->
@@ -1407,6 +1790,11 @@
 			
 			btn.disabled = true;
 			btnText.innerHTML = '<span class="spinner"></span> Loading...';
+			
+			// Switch typewriter to loading messages
+			if (window.setTypewriterLoading) {
+				window.setTypewriterLoading(true);
+			}
 			
 			document.getElementById('systemStatus').textContent = 'Loading...';
 			progressContainer.classList.add('visible');
@@ -1633,3 +2021,5 @@
 	</script>
 </body>
 </html>
+
+
