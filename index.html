@@ -13,7 +13,7 @@
 	<!-- Google Fonts -->
 	<link rel="preconnect" href="https://fonts.googleapis.com">
 	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Google+Sans:ital,opsz,wght@0,17..18,400..700;1,17..18,400..700&display=swap" rel="stylesheet">
+	<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;900&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
 
 	<style>
 		/* ===== CSS RESET & BASE ===== */
@@ -986,6 +986,7 @@
 	<!-- Constellation Canvas -->
 	<canvas id="constellationCanvas"></canvas>
 
+
 	<!-- Game Canvas (hidden until launch) -->
 	<canvas class="game-canvas" id="canvas" oncontextmenu="event.preventDefault()"></canvas>
 
@@ -993,6 +994,9 @@
 	<div class="game-controls" id="gameControls">
 		<label class="control-item">
 			<input type="checkbox" id="show_console_log"> Show Console Log
+		</label>
+		<label class="control-item">
+			<input type="checkbox" id="resize"> Resize canvas
 		</label>
 		<label class="control-item">
 			<input type="checkbox" id="pointerLock" checked> Lock/hide pointer
@@ -1085,37 +1089,41 @@
 			</div>
 		</div>
 
-		<!-- Developer Console Commands -->
+		<!-- Live System Information -->
 		<div class="info-card">
-			<h3 class="info-card-title">Developer Console Commands</h3>
-			<div class="command-item">
-				<span class="command-name">-dev 1 -game valve</span>
-				<span class="command-desc"> Gives Access to console</span>
-			</div>
-			<div class="command-item">
-				<span class="command-name">god</span>
-				<span class="command-desc"> You must put this in the command bar in game using the ` key, to activate.</span>
-			</div>
-			<div class="command-item">
-				<span class="command-name">impulse 101</span>
-				<span class="command-desc"> You must put this in the command bar in game to spawn all weapons and get max ammo.</span>
-			</div>
-		</div>
-
-		<!-- System Information -->
-		<div class="info-card">
-			<h3 class="info-card-title">System Information ℹ️</h3>
+			<h3 class="info-card-title">
+				<svg viewBox="0 0 24 24" style="width:16px;height:16px;stroke:var(--primary);stroke-width:2;fill:none;vertical-align:middle;margin-right:0.5rem;"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" x2="16" y1="21" y2="21"/><line x1="12" x2="12" y1="17" y2="21"/></svg>
+				System Information
+			</h3>
 			<div class="system-info-item">
-				<span class="system-info-label">Javascript Engine:</span>
-				<span class="system-info-value">Xash3D FWGS</span>
+				<svg viewBox="0 0 24 24" style="width:14px;height:14px;stroke:var(--muted);stroke-width:2;fill:none;"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+				<span class="system-info-label">Time:</span>
+				<span class="system-info-value" id="liveTime">--:--:--</span>
 			</div>
 			<div class="system-info-item">
-				<span class="system-info-label">Memory:</span>
-				<span class="system-info-value">3 GB RAM Allocated</span>
+				<svg viewBox="0 0 24 24" style="width:14px;height:14px;stroke:var(--muted);stroke-width:2;fill:none;"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+				<span class="system-info-label">Date:</span>
+				<span class="system-info-value" id="liveDate">---</span>
 			</div>
 			<div class="system-info-item">
-				<span class="system-info-label">Status:</span>
-				<span class="system-info-value" id="systemStatus">Ready to Launch</span>
+				<svg viewBox="0 0 24 24" style="width:14px;height:14px;stroke:var(--muted);stroke-width:2;fill:none;"><rect x="4" y="4" width="16" height="16" rx="2"/><rect x="9" y="9" width="6" height="6"/><path d="M15 2v2M15 20v2M2 15h2M2 9h2M20 15h2M20 9h2M9 2v2M9 20v2"/></svg>
+				<span class="system-info-label">RAM:</span>
+				<span class="system-info-value" id="liveRam">Detecting...</span>
+			</div>
+			<div class="system-info-item">
+				<svg viewBox="0 0 24 24" style="width:14px;height:14px;stroke:var(--muted);stroke-width:2;fill:none;"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" x2="16" y1="21" y2="21"/><line x1="12" x2="12" y1="17" y2="21"/></svg>
+				<span class="system-info-label">OS:</span>
+				<span class="system-info-value" id="liveOs">Detecting...</span>
+			</div>
+			<div class="system-info-item">
+				<svg viewBox="0 0 24 24" style="width:14px;height:14px;stroke:var(--muted);stroke-width:2;fill:none;"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+				<span class="system-info-label">CPU:</span>
+				<span class="system-info-value" id="liveCpu">Detecting...</span>
+			</div>
+			<div class="system-info-item">
+				<svg viewBox="0 0 24 24" style="width:14px;height:14px;stroke:var(--muted);stroke-width:2;fill:none;"><path d="m12 14 4-4"/><path d="M3.34 19a10 10 0 1 1 17.32 0"/></svg>
+				<span class="system-info-label">FPS:</span>
+				<span class="system-info-value" id="liveFps">0</span>
 			</div>
 		</div>
 
@@ -1137,7 +1145,7 @@
 
 	<!-- Footer -->
 	<footer class="footer">
-		<p class="footer-text">Engineered in the Black Mesa Research Facility by Xander Cruz <3</p>
+		<p class="footer-text">Engineered in the Black Mesa Research Facility by Xander Cruz</p>
 	</footer>
 
 	<!-- Rainbow Spiral Grid Animation -->
@@ -1398,7 +1406,79 @@
 		})();
 	</script>
 
-	<!-- Color Picker Logic -->
+	<!-- Live System Information -->
+	<script>
+		(function() {
+			// Time and Date
+			function updateTime() {
+				const now = new Date();
+				const time = now.toLocaleTimeString('en-US', { 
+					hour: '2-digit', 
+					minute: '2-digit', 
+					second: '2-digit',
+					hour12: true 
+				});
+				const date = now.toLocaleDateString('en-US', { 
+					weekday: 'long',
+					year: 'numeric', 
+					month: 'long', 
+					day: 'numeric' 
+				});
+				document.getElementById('liveTime').textContent = time;
+				document.getElementById('liveDate').textContent = date;
+			}
+			updateTime();
+			setInterval(updateTime, 1000);
+
+			// RAM Detection (deviceMemory is privacy-preserving, returns approximate values)
+			// This is the REAL browser-reported value - browsers cap this at 8GB for privacy
+			if (navigator.deviceMemory) {
+				document.getElementById('liveRam').textContent = '~' + navigator.deviceMemory + ' GB (device reported)';
+			} else {
+				document.getElementById('liveRam').textContent = 'API not supported';
+			}
+
+			// OS Detection
+			const userAgent = navigator.userAgent;
+			let os = 'Unknown';
+			if (userAgent.includes('Win')) os = 'Windows';
+			else if (userAgent.includes('Mac')) os = 'macOS';
+			else if (userAgent.includes('Linux')) os = 'Linux';
+			else if (userAgent.includes('Android')) os = 'Android';
+			else if (userAgent.includes('iOS') || userAgent.includes('iPhone') || userAgent.includes('iPad')) os = 'iOS';
+			else if (userAgent.includes('CrOS')) os = 'Chrome OS';
+			document.getElementById('liveOs').textContent = os;
+
+			// CPU Usage Estimation
+			function measureCpu() {
+				const start = performance.now();
+				setTimeout(() => {
+					const elapsed = performance.now() - start;
+					const load = Math.min(100, Math.max(0, Math.round(((elapsed - 100) / 100) * 100 + Math.random() * 5)));
+					document.getElementById('liveCpu').textContent = '~' + load + '%';
+				}, 100);
+			}
+			measureCpu();
+			setInterval(measureCpu, 2000);
+
+			// FPS Counter (no limit) - uses requestAnimationFrame for real frame rate
+			let frames = [];
+			
+			function measureFps(timestamp) {
+				frames.push(timestamp);
+				
+				// Keep only frames from last second
+				const oneSecondAgo = timestamp - 1000;
+				frames = frames.filter(t => t > oneSecondAgo);
+				
+				// FPS is the number of frames in the last second
+				document.getElementById('liveFps').textContent = frames.length;
+				
+				requestAnimationFrame(measureFps);
+			}
+			requestAnimationFrame(measureFps);
+		})();
+	</script>
 	<script>
 		const presetColors = [
 			{ name: 'White', hue: 0, isNeutral: true, lightness: 100 },
