@@ -8,13 +8,13 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 	<meta name="MobileOptimized" content="2000">
 	<meta name="HandheldFriendly" content="true">
-	<title>IXL | Math, Language Arts, Science, Social Studies, and Spanish</title>
+	<title>IXL | Math, Language Arts, Science, Social Studies, and Spanish</title>	
 	
 	<!-- Google Fonts -->
 	<link rel="preconnect" href="https://fonts.googleapis.com">
 	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-	<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;900&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
-
+	<link href="https://fonts.googleapis.com/css2?family=Google+Sans:ital,opsz,wght@0,17..18,400..700;1,17..18,400..700&display=swap" rel="stylesheet">
+	
 	<style>
 		/* ===== CSS RESET & BASE ===== */
 		*, *::before, *::after {
@@ -1093,7 +1093,7 @@
 		<div class="info-card">
 			<h3 class="info-card-title">
 				<svg viewBox="0 0 24 24" style="width:16px;height:16px;stroke:var(--primary);stroke-width:2;fill:none;vertical-align:middle;margin-right:0.5rem;"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" x2="16" y1="21" y2="21"/><line x1="12" x2="12" y1="17" y2="21"/></svg>
-				System Information
+				Live System Information
 			</h3>
 			<div class="system-info-item">
 				<svg viewBox="0 0 24 24" style="width:14px;height:14px;stroke:var(--muted);stroke-width:2;fill:none;"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
@@ -1408,7 +1408,7 @@
 
 	<!-- Live System Information -->
 	<script>
-		(function() {
+		document.addEventListener('DOMContentLoaded', function() {
 			// Time and Date
 			function updateTime() {
 				const now = new Date();
@@ -1477,7 +1477,7 @@
 				requestAnimationFrame(measureFps);
 			}
 			requestAnimationFrame(measureFps);
-		})();
+		});
 	</script>
 	<script>
 		const presetColors = [
